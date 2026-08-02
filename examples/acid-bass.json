@@ -1,0 +1,94 @@
+{
+  "name": "Squelch With Teeth",
+  "description": "Acid bass with analog squelch, digital Multi Filter processing, and tempo-synced FX",
+  "type": "Bass",
+  "subtype": "Acid",
+  "author": "Claude",
+
+  "voice": { "mode": "Mono", "glide": 0.25 },
+
+  "osc1": {
+    "engine": "BasicWaves",
+    "wave": 0.5,
+    "timbre": 0.3,
+    "shape": 0.15,
+    "volume": 1.0
+  },
+
+  "osc2": {
+    "engine": "Multi Filter",
+    "wave": 0.3,
+    "timbre": 0.5,
+    "shape": 0.6,
+    "volume": 0.5
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.25,
+    "resonance": 0.7,
+    "env_amount": 0.75
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.35,
+    "sustain": 0.6,
+    "release": 0.15
+  },
+
+  "lfo1": { "rate": 0.08, "wave": "Sine" },
+  "cycling_env": { "rise": 0.1, "fall": 0.4, "hold": 0.05, "mode": "Env" },
+
+  "fx": [
+    { "algo": "Distortion", "opt1": "Germanium", "time": 0.55, "intensity": 0.45, "amount": 0.5 },
+    { "algo": "Delay", "opt1": "Mono Sync", "time": 0.5, "intensity": 0.35, "amount": 0.25 },
+    { "algo": "Phaser", "opt1": "Space", "time": 0.15, "intensity": 0.35, "amount": 0.3 }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Cutoff", "amount": "+8%" },
+    { "src": "CycEnv", "dest": "Osc1 Wave", "amount": "+20%" },
+    { "src": "Velocity", "dest": "Env Amount", "amount": "+35%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+30%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+50%" },
+        { "dest": "Resonance", "amount": "+30%" },
+        { "dest": "FX1 Time", "amount": "+40%" },
+        { "dest": "FX2 Amount", "amount": "+35%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX2 Time", "amount": "+30%" },
+        { "dest": "FX2 Intensity", "amount": "+25%" },
+        { "dest": "FX3 Intensity", "amount": "+40%" },
+        { "dest": "FX3 Amount", "amount": "+30%" }
+      ]
+    }
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 138,
+    "time_div": "1/16",
+    "lane_dests": ["Cutoff", "Resonance", "Osc1 Wave", "FX3 Amount"],
+    "steps": [
+      { "step": 0,  "notes": ["C2"],  "vel": 110, "gate": 0.8,  "mods": [0.75, 0.5, 0.5, 0.5] },
+      { "step": 1,  "notes": ["C2"],  "vel": 75,  "gate": 0.4 },
+      { "step": 3,  "notes": ["D#2"], "vel": 110, "gate": 0.85, "mods": [0.8, 0.65, 0.5, 0.5] },
+      { "step": 4,  "notes": ["C2"],  "vel": 70,  "gate": 0.3 },
+      { "step": 6,  "notes": ["F2"],  "vel": 100, "gate": 0.7,  "mods": [0.7, 0.5, 0.5, 0.5] },
+      { "step": 7,  "notes": ["F2"],  "vel": 60,  "gate": 0.25 },
+      { "step": 8,  "notes": ["G2"],  "vel": 115, "gate": 0.95, "mods": [0.85, 0.5, 0.7, 0.5] },
+      { "step": 9,  "notes": ["F2"],  "vel": 80,  "gate": 0.5,  "mods": [0.55, 0.5, 0.5, 0.5] },
+      { "step": 10, "notes": ["D#2"], "vel": 90,  "gate": 0.5,  "mods": [0.6, 0.5, 0.5, 0.5] },
+      { "step": 12, "notes": ["C2"],  "vel": 110, "gate": 0.8,  "mods": [0.75, 0.7, 0.5, 0.65] },
+      { "step": 14, "notes": ["D#2"], "vel": 85,  "gate": 0.6,  "mods": [0.6, 0.5, 0.5, 0.5] }
+    ]
+  }
+}

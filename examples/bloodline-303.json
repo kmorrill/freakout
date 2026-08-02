@@ -1,0 +1,114 @@
+{
+  "name": "Bloodline 303",
+  "description": "Proto-acid mainline. Wet snarling acid that purrs→screams with cutoff sweep. BasicWaves saw (sub for chest weight, symmetry for vowel edge) through Multi Filter processor at 70% wet. CycEnv breathes the cutoff, vel/AT drives squelch and opens resonance fangs. M1=SQUELCH (cutoff+envAmt+drive+wet). M2=FLOOD (delay+phaser+feedback, output trimmed). Distortion (Germanium) > Phaser (Space Sync) > Delay (Mono Sync).",
+  "type": "Bass",
+  "subtype": "Acid",
+  "author": "Claude",
+
+  "voice": { "mode": "Mono", "glide": 0.15 },
+
+  "osc1": {
+    "engine": "BasicWaves",
+    "wave": 0.62,
+    "timbre": 0.28,
+    "shape": 0.22,
+    "volume": 1.0,
+    "mod_quantize": "Chromatic"
+  },
+
+  "osc2": {
+    "engine": "Multi Filter",
+    "wave": 0.3,
+    "timbre": 0.5,
+    "shape": 0.55,
+    "volume": 0.7
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.18,
+    "resonance": 0.68,
+    "env_amount": 0.72
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.26,
+    "sustain": 0.1,
+    "release": 0.08
+  },
+
+  "cycling_env": { "rise": 0.35, "fall": 0.45, "hold": 0.0, "mode": "Loop" },
+  "lfo1": { "rate": 0.12, "wave": "Sine" },
+
+  "fx": [
+    { "algo": "Distortion", "opt1": "Germanium", "time": 0.45, "intensity": 0.48, "amount": 0.42 },
+    { "algo": "Phaser", "opt1": "Space Sync", "time": 0.5, "intensity": 0.38, "amount": 0.22 },
+    { "algo": "Delay", "opt1": "Mono Sync", "time": 0.5, "intensity": 0.42, "amount": 0.12 }
+  ],
+
+  "velo_at": "VeloPlusAt",
+
+  "mod": [
+    { "src": "CycEnv",   "dest": "Cutoff",     "amount": "+6%" },
+    { "src": "Velocity",  "dest": "Env Amount", "amount": "+35%" },
+    { "src": "Velocity",  "dest": "Resonance",  "amount": "+28%" },
+    { "src": "Kbd",       "dest": "Cutoff",     "amount": "+20%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff",        "amount": "+55%" },
+        { "dest": "Env Amount",    "amount": "+40%" },
+        { "dest": "FX1 Intensity", "amount": "+45%" },
+        { "dest": "Osc2 Volume",   "amount": "+30%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX3 Amount",    "amount": "+65%" },
+        { "dest": "FX2 Amount",    "amount": "+55%" },
+        { "dest": "FX3 Intensity", "amount": "+40%" },
+        { "dest": "VCA",           "amount": "-15%" }
+      ]
+    }
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 138,
+    "time_div": "1/16",
+    "swing": 0.52,
+    "lane_dests": ["Cutoff", "Env Amount", "FX1 Intensity", "Osc2 Volume"],
+    "steps": [
+      { "step": 0,  "notes": ["C2"],  "vel": 120, "gate": 0.75, "mods": [0.72, 0.65, 0.5, 0.5] },
+      { "step": 1,  "notes": ["C2"],  "vel": 55,  "gate": 0.25 },
+      { "step": 2,  "notes": ["C3"],  "vel": 100, "gate": 0.5,  "mods": [0.80, 0.70, 0.55, 0.5] },
+      { "step": 3,  "notes": ["Eb2"], "vel": 115, "gate": 0.85, "mods": [0.78, 0.70, 0.5, 0.5] },
+      { "step": 4,  "notes": ["C2"],  "vel": 50,  "gate": 0.2 },
+      { "step": 6,  "notes": ["F2"],  "vel": 110, "gate": 0.7,  "mods": [0.68, 0.60, 0.5, 0.5] },
+      { "step": 7,  "notes": ["F2"],  "vel": 45,  "gate": 0.18 },
+      { "step": 8,  "notes": ["G2"],  "vel": 125, "gate": 0.9,  "mods": [0.85, 0.75, 0.6, 0.6] },
+      { "step": 9,  "notes": ["F2"],  "vel": 70,  "gate": 0.4,  "mods": [0.55, 0.5, 0.5, 0.5] },
+      { "step": 10, "notes": ["Eb2"], "vel": 90,  "gate": 0.55, "mods": [0.62, 0.55, 0.5, 0.5] },
+      { "step": 11, "notes": ["C2"],  "vel": 45,  "gate": 0.18 },
+      { "step": 12, "notes": ["C2"],  "vel": 120, "gate": 0.8,  "mods": [0.75, 0.68, 0.55, 0.65] },
+      { "step": 13, "notes": ["Bb1"], "vel": 95,  "gate": 0.6,  "mods": [0.65, 0.58, 0.5, 0.5] },
+      { "step": 14, "notes": ["Ab1"], "vel": 105, "gate": 0.65, "mods": [0.70, 0.62, 0.5, 0.5] },
+      { "step": 15, "notes": ["G1"],  "vel": 55,  "gate": 0.25 }
+    ]
+  },
+
+  "raw_params": {
+    "Osc_Freerun": 0.0,
+    "Gen_LegatoMode": 1.0,
+    "Gen_RetrigMode": 0.0,
+    "Env_AttackCurve": 0.5,
+    "Env_DecayCurve": 0.65,
+    "Env_ReleaseCurve": 0.5,
+    "CycEnv_RetrigSrc": 0.25,
+    "CycEnv_RiseCurve": 0.4,
+    "CycEnv_FallCurve": 0.55
+  }
+}

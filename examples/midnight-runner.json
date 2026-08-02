@@ -1,0 +1,144 @@
+{
+  "name": "Midnight Runner",
+  "description": "Dark pulsing sequence — thick unison saw stacks through a breathing filter, with a looping cycling env that slowly reshapes the harmonic content. Meta-mod makes the filter motion deepen over time. Macro 1 = brightness, Macro 2 = space.",
+  "type": "Lead",
+  "subtype": "Sequence",
+  "author": "Claude",
+
+  "voice": {
+    "mode": "Unison",
+    "glide": 0.08,
+    "unison_voices": 4,
+    "unison_mode": "Uni Poly",
+    "alloc": "Cycle",
+    "steal": "Oldest",
+    "retrig": "Env Reset",
+    "legato": false
+  },
+
+  "osc1": {
+    "engine": "SuperWave",
+    "wave": 0.75,
+    "timbre": 0.55,
+    "shape": 0.40,
+    "volume": 0.90
+  },
+
+  "osc2": {
+    "engine": "VAnalog",
+    "wave": 0.60,
+    "timbre": 0.35,
+    "shape": 0.50,
+    "volume": 0.45,
+    "tune": 0.5,
+    "fine_tune": 0.52
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.45,
+    "resonance": 0.20,
+    "env_amount": 0.40
+  },
+
+  "envelope": {
+    "attack": 0.02,
+    "decay": 0.35,
+    "sustain": 0.60,
+    "release": 0.40,
+    "attack_curve": 0.15,
+    "decay_curve": 0.60,
+    "release_curve": 0.70
+  },
+
+  "lfo1": {
+    "rate": 0.15,
+    "wave": "Triangle",
+    "sync": true,
+    "rate_sync": "1/8",
+    "retrig": "Poly Kbd",
+    "sync_filter": "Straight"
+  },
+
+  "lfo2": {
+    "rate": 0.03,
+    "wave": "Sine",
+    "sync": false,
+    "retrig": "Free"
+  },
+
+  "cycling_env": {
+    "rise": 0.35,
+    "fall": 0.50,
+    "hold": 0.05,
+    "mode": "Loop",
+    "stage_order": "Rise Fall Hold",
+    "retrig": "LFO1",
+    "rise_curve": 0.65,
+    "fall_curve": 0.40
+  },
+
+  "fx": [
+    { "algo": "Delay", "opt1": "Stereo Sync", "time": 0.40, "intensity": 0.35, "amount": 0.30 },
+    { "algo": "Reverb", "opt1": "Dark Room", "time": 0.55, "intensity": 0.40, "amount": 0.35 },
+    { "algo": "Chorus", "opt1": "Lush", "time": 0.30, "intensity": 0.45, "amount": 0.25 }
+  ],
+
+  "mod": [
+    { "src": "CycEnv", "dest": "Cutoff", "amount": "+22%" },
+    { "src": "CycEnv", "dest": "Osc1 Timbre", "amount": "+10%" },
+    { "src": "LFO2", "dest": "Mod CycEnv:Cutoff", "amount": "+18%" },
+    { "src": "LFO2", "dest": "FX1 Intensity", "amount": "+12%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+25%" },
+    { "src": "Kbd", "dest": "Cutoff", "amount": "+18%" },
+    { "src": "Wheel", "dest": "Osc1 Timbre", "amount": "+50%" },
+    { "src": "Wheel", "dest": "Reso", "amount": "+20%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+55%" },
+        { "dest": "Osc1 Timbre", "amount": "+25%" },
+        { "dest": "FX2 Amount", "amount": "+30%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX1 Amount", "amount": "+40%" },
+        { "dest": "FX1 Intensity", "amount": "+30%" },
+        { "dest": "Uni Spread", "amount": "+35%" }
+      ]
+    }
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 132,
+    "time_div": "1/16",
+    "gate": 0.65,
+    "swing": 0.52,
+    "lane_dests": ["Cutoff"],
+    "steps": [
+      { "step": 0,  "notes": ["C3"],  "vel": 110, "gate": 0.70, "mods": [0.55] },
+      { "step": 2,  "notes": ["C3"],  "vel": 80,  "gate": 0.50 },
+      { "step": 4,  "notes": ["Eb3"], "vel": 100, "gate": 0.65, "mods": [0.50] },
+      { "step": 6,  "notes": ["Eb3"], "vel": 75,  "gate": 0.45 },
+      { "step": 8,  "notes": ["G3"],  "vel": 105, "gate": 0.70, "mods": [0.60] },
+      { "step": 10, "notes": ["G3"],  "vel": 70,  "gate": 0.40 },
+      { "step": 12, "notes": ["Bb3"], "vel": 95,  "gate": 0.60, "mods": [0.65] },
+      { "step": 14, "notes": ["G3"],  "vel": 65,  "gate": 0.35 },
+
+      { "step": 16, "notes": ["Ab2"], "vel": 110, "gate": 0.70, "mods": [0.50] },
+      { "step": 18, "notes": ["Ab2"], "vel": 80,  "gate": 0.50 },
+      { "step": 20, "notes": ["C3"],  "vel": 100, "gate": 0.65, "mods": [0.55] },
+      { "step": 22, "notes": ["C3"],  "vel": 75,  "gate": 0.45 },
+      { "step": 24, "notes": ["Eb3"], "vel": 105, "gate": 0.70, "mods": [0.60] },
+      { "step": 26, "notes": ["Eb3"], "vel": 70,  "gate": 0.40 },
+      { "step": 28, "notes": ["G3"],  "vel": 95,  "gate": 0.55, "mods": [0.58] },
+      { "step": 30, "notes": ["Eb3"], "vel": 65,  "gate": 0.35 }
+    ]
+  },
+
+  "volume": 0.85
+}

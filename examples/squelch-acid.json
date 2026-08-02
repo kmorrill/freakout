@@ -1,0 +1,70 @@
+{
+  "name": "Squelch Acid",
+  "description": "Mono acid bass with analog squelch, glide, and Germanium distortion",
+  "type": "Bass",
+  "subtype": "Acid",
+  "author": "Claude",
+
+  "voice": { "mode": "Mono", "glide": 0.15 },
+
+  "osc1": {
+    "engine": "BasicWaves",
+    "wave": 0.75,
+    "timbre": 0.3,
+    "shape": 0.1,
+    "volume": 1.0,
+    "mod_quantize": "Chromatic"
+  },
+
+  "osc2": {
+    "engine": "Multi Filter",
+    "wave": 0.3,
+    "timbre": 0.5,
+    "shape": 0.6,
+    "volume": 0.7
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.20,
+    "resonance": 0.65,
+    "env_amount": 0.72
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.35,
+    "sustain": 0.0,
+    "release": 0.15
+  },
+
+  "cycling_env": { "mode": "Loop", "rise": 0.2, "fall": 0.3, "hold": 0.05 },
+
+  "fx": [
+    { "algo": "Distortion", "opt1": "Germanium", "time": 0.55, "intensity": 0.4, "amount": 0.6 },
+    { "algo": "Delay", "opt1": "Mono Sync", "time": 0.5, "intensity": 0.3, "amount": 0.25 },
+    null
+  ],
+
+  "mod": [
+    { "src": "CycEnv", "dest": "Cutoff", "amount": "+25%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+40%" },
+    { "src": "Velocity", "dest": "Env Amount", "amount": "+30%" }
+  ],
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 138,
+    "time_div": "1/16",
+    "steps": [
+      { "step": 0,  "notes": ["C2"],  "vel": 120, "gate": 0.8 },
+      { "step": 2,  "notes": ["C2"],  "vel": 90,  "gate": 0.5 },
+      { "step": 4,  "notes": ["Eb2"], "vel": 110, "gate": 0.7 },
+      { "step": 6,  "notes": ["C2"],  "vel": 80,  "gate": 0.4 },
+      { "step": 8,  "notes": ["F2"],  "vel": 127, "gate": 0.9 },
+      { "step": 10, "notes": ["C2"],  "vel": 70,  "gate": 0.3 },
+      { "step": 12, "notes": ["G2"],  "vel": 100, "gate": 0.6 },
+      { "step": 14, "notes": ["C2"],  "vel": 85,  "gate": 0.5 }
+    ]
+  }
+}

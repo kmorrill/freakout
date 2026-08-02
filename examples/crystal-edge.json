@@ -1,0 +1,132 @@
+{
+  "name": "Crystal Edge",
+  "description": "Cutting lead with crystalline shimmer. SuperWave provides the fat unison saw stack, Comb Filter adds metallic harmonics that give it a glassy edge. Punchy envelope with glide for expressive playing. Filter has bite from the resonance. Macro 1 (OPEN) brightens and adds width. Macro 2 (GRIT) brings in distortion and comb intensity. Works great with the arp in Up/Down mode for trance-style leads, or played monophonically for expressive solos.",
+  "type": "Lead",
+  "subtype": "Unison",
+  "author": "Claude",
+
+  "voice": {
+    "mode": "Unison",
+    "unison_voices": 4,
+    "glide": 0.12,
+    "legato": true
+  },
+
+  "osc1": {
+    "engine": "SuperWave",
+    "wave": 0.0,
+    "timbre": 0.55,
+    "shape": 0.6,
+    "volume": 0.85
+  },
+
+  "osc2": {
+    "engine": "Comb Filter",
+    "wave": 0.50,
+    "timbre": 0.52,
+    "shape": 0.45,
+    "volume": 0.40,
+    "tune": 0.5
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.35,
+    "resonance": 0.38,
+    "env_amount": 0.55
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.40,
+    "sustain": 0.55,
+    "release": 0.35
+  },
+
+  "lfo1": {
+    "wave": "Triangle",
+    "sync": true,
+    "rate_sync": "1/2",
+    "retrig": "Mono Kbd"
+  },
+
+  "lfo2": {
+    "rate": 0.25,
+    "wave": "Sine",
+    "retrig": "Free"
+  },
+
+  "cycling_env": {
+    "rise": 0.15,
+    "fall": 0.25,
+    "hold": 0.0,
+    "mode": "Env"
+  },
+
+  "fx": [
+    {
+      "algo": "Distortion",
+      "opt1": "Soft Clip",
+      "time": 0.35,
+      "intensity": 0.50,
+      "amount": 0.30
+    },
+    {
+      "algo": "Chorus",
+      "opt1": "Default",
+      "time": 0.40,
+      "intensity": 0.45,
+      "amount": 0.35
+    },
+    {
+      "algo": "Delay",
+      "opt1": "Stereo Sync",
+      "time": 0.5,
+      "intensity": 0.28,
+      "amount": 0.22
+    }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Cutoff", "amount": "+25%" },
+    { "src": "LFO2", "dest": "Osc1 Timbre", "amount": "+12%" },
+    { "src": "LFO2", "dest": "Osc2 Wave", "amount": "+8%" },
+    { "src": "Envelope", "dest": "Osc2 Timbre", "amount": "+20%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+35%" },
+    { "src": "Velocity", "dest": "FX1 Amount", "amount": "+20%" },
+    { "src": "Kbd", "dest": "Cutoff", "amount": "+18%" },
+    { "src": "Wheel", "dest": "Osc1 Timbre", "amount": "+35%" },
+    { "src": "Wheel", "dest": "FX1 Amount", "amount": "+25%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+50%" },
+        { "dest": "Osc1 Timbre", "amount": "+25%" },
+        { "dest": "FX2 Amount", "amount": "+40%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX1 Amount", "amount": "+55%" },
+        { "dest": "Osc2 Volume", "amount": "+45%" },
+        { "dest": "Osc2 Timbre", "amount": "+35%" },
+        { "dest": "Resonance", "amount": "+20%" }
+      ]
+    }
+  },
+
+  "arp": {
+    "mode": "Up/Down",
+    "octaves": 2,
+    "gate": 0.6
+  },
+
+  "raw_params": {
+    "Env_AttackCurve": 0.4,
+    "Env_DecayCurve": 0.5,
+    "Env_ReleaseCurve": 0.5,
+    "Vibrato_On": 0.0
+  }
+}

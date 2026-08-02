@@ -1,0 +1,102 @@
+{
+  "name": "Vampire Siren",
+  "description": "Controlled chaos lead. FM/RM inharmonic core tamed by analog filter + exponential envelopes. Aftertouch drives vibrato depth+speed and filter scream. CycEnv gently cycles FM depth. Slow triangle LFO2 drifts the FM ratio. Macro 1 (Siren) escalates brightness, resonance, and delay feedback. Macro 2 (Kill Switch) slams everything dry and closed. Phrygian Dominant mod quantize for dark exotic improv.",
+  "type": "Lead",
+  "subtype": "Experimental",
+  "author": "Claude",
+
+  "voice": { "mode": "Mono", "glide": 0.2 },
+
+  "osc1": {
+    "engine": "BasicWaves",
+    "wave": 0.5,
+    "timbre": 0.3,
+    "shape": 0.15,
+    "volume": 0.75,
+    "mod_quantize": "Phrygian Dom"
+  },
+
+  "osc2": {
+    "engine": "FM/RM",
+    "wave": 0.3,
+    "timbre": 0.5,
+    "shape": 0.4,
+    "volume": 0.7,
+    "mod_quantize": "Phrygian Dom"
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.6,
+    "resonance": 0.3,
+    "env_amount": 0.55
+  },
+
+  "envelope": {
+    "attack": 0.01,
+    "decay": 0.35,
+    "sustain": 0.7,
+    "release": 0.3
+  },
+
+  "lfo1": { "rate": 0.25, "wave": "Sine" },
+  "lfo2": { "rate": 0.06, "wave": "Tri" },
+
+  "cycling_env": { "rise": 0.15, "fall": 0.25, "hold": 0.0, "mode": "Env" },
+
+  "fx": [
+    { "algo": "Distortion", "opt1": "Dual Fold", "time": 0.45, "intensity": 0.4, "amount": 0.35 },
+    { "algo": "Delay", "opt1": "Filtered P-P Sync", "time": 0.5, "intensity": 0.5, "amount": 0.3 },
+    { "algo": "Phaser", "opt1": "Space", "time": 0.25, "intensity": 0.45, "amount": 0.3 }
+  ],
+
+  "velo_at": "Aftertouch",
+
+  "mod": [
+    { "src": "LFO1", "dest": "Pitch 1", "amount": "+8%" },
+    { "src": "LFO1", "dest": "Pitch 2", "amount": "+8%" },
+    { "src": "LFO1", "dest": "Osc1 Timbre", "amount": "+8%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+45%" },
+    { "src": "Velocity", "dest": "LFO1 AM", "amount": "+65%" },
+    { "src": "Velocity", "dest": "Resonance", "amount": "+30%" },
+    { "src": "LFO2", "dest": "Osc2 Timbre", "amount": "+8%" },
+    { "src": "CycEnv", "dest": "Osc2 Shape", "amount": "+15%" },
+    { "src": "Kbd", "dest": "Cutoff", "amount": "+20%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Osc2 Timbre", "amount": "+45%" },
+        { "dest": "Resonance", "amount": "+45%" },
+        { "dest": "FX2 Intensity", "amount": "+55%" },
+        { "dest": "Osc2 Shape", "amount": "+35%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "-65%" },
+        { "dest": "FX2 Amount", "amount": "-75%" },
+        { "dest": "FX3 Amount", "amount": "-75%" },
+        { "dest": "FX1 Amount", "amount": "-50%" }
+      ]
+    }
+  },
+
+  "raw_params": {
+    "Vibrato_On": 1.0,
+    "Vibrato_Rate": 0.4,
+    "Vibrato_Depth": 0.0,
+    "Env_AttackCurve": 0.6,
+    "Env_DecayCurve": 0.5,
+    "Env_ReleaseCurve": 0.4,
+    "CycEnv_StageOrder": 0.5,
+    "CycEnv_RetrigSrc": 0.25,
+    "CycEnv_RiseCurve": 0.4,
+    "CycEnv_FallCurve": 0.5,
+    "LFO1_Retrig": 0.2857,
+    "LFO2_Retrig": 0.0,
+    "Gen_LegatoMode": 1.0,
+    "Gen_RetrigMode": 0.0
+  }
+}

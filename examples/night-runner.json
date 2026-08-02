@@ -1,0 +1,90 @@
+{
+  "name": "Night Runner",
+  "description": "Thick unison arp lead with SuperWave stacks, breathing filter, and stereo delay",
+  "type": "Lead",
+  "subtype": "Arp",
+  "author": "Claude",
+
+  "voice": {
+    "mode": "Unison",
+    "unison_voices": 4,
+    "unison_mode": "Uni Poly"
+  },
+
+  "osc1": {
+    "engine": "SuperWave",
+    "wave": 0.8,
+    "timbre": 0.6,
+    "shape": 0.2,
+    "volume": 1.0
+  },
+
+  "osc2": {
+    "engine": "VAnalog",
+    "wave": 0.5,
+    "timbre": 0.4,
+    "shape": 0.1,
+    "volume": 0.85,
+    "fine_tune": 0.52
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.30,
+    "resonance": 0.25,
+    "env_amount": 0.45
+  },
+
+  "envelope": {
+    "attack": 0.02,
+    "decay": 0.55,
+    "sustain": 0.4,
+    "release": 0.5
+  },
+
+  "lfo1": {
+    "wave": "Triangle",
+    "sync": true,
+    "rate_sync": "1/4",
+    "retrig": "Poly Kbd",
+    "sync_filter": "Straight"
+  },
+
+  "lfo2": { "rate": 0.04, "wave": "Sine", "retrig": "Free" },
+
+  "cycling_env": { "mode": "Loop", "rise": 0.35, "fall": 0.4 },
+
+  "fx": [
+    { "algo": "Super Unison", "opt1": "Ravey", "time": 0.5, "intensity": 0.4, "amount": 0.4 },
+    { "algo": "Delay", "opt1": "Stereo Sync", "time": 0.5, "intensity": 0.35, "amount": 0.3 },
+    { "algo": "Reverb", "opt1": "Hall", "time": 0.6, "intensity": 0.4, "amount": 0.3 }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Cutoff", "amount": "+35%" },
+    { "src": "LFO2", "dest": "Osc1 Timbre", "amount": "+15%" },
+    { "src": "CycEnv", "dest": "Osc1 Wave", "amount": "+20%" },
+    { "src": "Wheel", "dest": "FX2 Amount", "amount": "+60%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+25%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+50%" },
+        { "dest": "Osc1 Timbre", "amount": "+30%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX2 Amount", "amount": "+60%" },
+        { "dest": "FX3 Amount", "amount": "+50%" }
+      ]
+    }
+  },
+
+  "arp": {
+    "mode": "Up/Down",
+    "octaves": 2
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "name": "Minor-7 Knife v2",
+  "description": "Rave stab. SuperWave width + BasicWaves square octave up. Filter-shaped stab: filter starts closed, envelope rips it open on attack, then slams shut. Amp sustains while held. Chorus widens, reverb adds room tail, delay throws echoes. Macro 2 (Drop) explodes reverb/delay wet on demand.",
+  "type": "Lead",
+  "subtype": "Stab",
+  "author": "Claude",
+
+  "voice": { "mode": "Poly" },
+
+  "osc1": {
+    "engine": "SuperWave",
+    "wave": 0.25,
+    "timbre": 0.7,
+    "shape": 0.75,
+    "volume": 1.0
+  },
+
+  "osc2": {
+    "engine": "BasicWaves",
+    "wave": 0.1,
+    "timbre": 0.4,
+    "shape": 0.0,
+    "volume": 0.35,
+    "tune": 0.75
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.15,
+    "resonance": 0.2,
+    "env_amount": 0.85
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.4,
+    "sustain": 0.7,
+    "release": 0.18
+  },
+
+  "lfo1": { "rate": 0.05, "wave": "Sine" },
+
+  "cycling_env": { "rise": 0.01, "fall": 0.2, "hold": 0.0, "mode": "Env" },
+
+  "fx": [
+    { "algo": "Chorus", "opt1": "Lush", "time": 0.35, "intensity": 0.55, "amount": 0.5 },
+    { "algo": "Reverb", "opt1": "Room", "time": 0.5, "intensity": 0.4, "amount": 0.2 },
+    { "algo": "Delay", "opt1": "Stereo Sync", "time": 0.4, "intensity": 0.2, "amount": 0.15 }
+  ],
+
+  "mod": [
+    { "src": "Velocity", "dest": "Env Amount", "amount": "+25%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+15%" },
+    { "src": "Velocity", "dest": "Decay", "amount": "-15%" },
+    { "src": "LFO1", "dest": "Pitch 1", "amount": "+3%" },
+    { "src": "LFO1", "dest": "Pitch 2", "amount": "+2%" },
+    { "src": "CycEnv", "dest": "Cutoff", "amount": "+20%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+50%" },
+        { "dest": "Resonance", "amount": "+30%" },
+        { "dest": "FX1 Intensity", "amount": "+25%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX2 Amount", "amount": "+65%" },
+        { "dest": "FX3 Amount", "amount": "+55%" },
+        { "dest": "FX3 Intensity", "amount": "+50%" },
+        { "dest": "FX2 Time", "amount": "+40%" }
+      ]
+    }
+  },
+
+  "raw_params": {
+    "Env_DecayCurve": 0.3,
+    "Env_ReleaseCurve": 0.4
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 138,
+    "time_div": "1/8",
+    "steps": [
+      { "step": 0,  "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 127, "gate": 0.6 },
+      { "step": 2,  "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 100, "gate": 0.35 },
+      { "step": 3,  "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 110, "gate": 0.45 },
+      { "step": 4,  "notes": ["Bb2", "Db3", "F3", "Ab3"], "vel": 127, "gate": 0.7 },
+      { "step": 6,  "notes": ["Bb2", "Db3", "F3", "Ab3"], "vel": 90,  "gate": 0.3 },
+      { "step": 8,  "notes": ["Ab2", "C3", "Eb3", "Gb3"], "vel": 120, "gate": 0.6 },
+      { "step": 10, "notes": ["Ab2", "C3", "Eb3", "Gb3"], "vel": 95,  "gate": 0.35 },
+      { "step": 12, "notes": ["Bb2", "Db3", "F3", "Ab3"], "vel": 127, "gate": 0.8 },
+      { "step": 14, "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 105, "gate": 0.4 }
+    ]
+  }
+}

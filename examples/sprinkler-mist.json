@@ -1,0 +1,120 @@
+{
+  "name": "Sprinkler Mist",
+  "description": "Water droplet FX using Vocoder Gated mode. Use with Arp for scattered drops. M1 DRIP RATE controls gate/decay/delay/vocoder depth. M2 FLOODLIGHT adds reverb/brightness. Use Gate strip live to open/close the sprinkler.",
+  "type": "FX",
+  "subtype": "Water Droplets",
+  "author": "Claude",
+
+  "voice": { "mode": "Poly" },
+
+  "osc1": {
+    "engine": "Noise",
+    "wave": 0.35,
+    "timbre": 0.75,
+    "shape": 0.5,
+    "volume": 1.0
+  },
+
+  "osc2": {
+    "engine": "Karplus",
+    "wave": 0.5,
+    "timbre": 0.4,
+    "shape": 0.2,
+    "volume": 0.6,
+    "tune": 0.75
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.85,
+    "resonance": 0.35,
+    "env_amount": 0.5
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.25,
+    "sustain": 0.15,
+    "release": 0.2,
+    "decay_curve": 0.6
+  },
+
+  "cycling_env": {
+    "rise": 0.02,
+    "fall": 0.15,
+    "hold": 0.0,
+    "mode": "Env"
+  },
+
+  "lfo1": {
+    "rate": 0.35,
+    "wave": "SnH",
+    "retrig": "Poly Kbd"
+  },
+
+  "lfo2": {
+    "rate": 0.2,
+    "wave": "Sine"
+  },
+
+  "fx": [
+    {
+      "algo": "Vocoder Self",
+      "opt1": "Gated",
+      "time": 0.5,
+      "intensity": 0.6,
+      "amount": 0.75
+    },
+    {
+      "algo": "Delay",
+      "opt1": "Stereo Sync",
+      "time": 0.35,
+      "intensity": 0.4,
+      "amount": 0.35
+    },
+    {
+      "algo": "Reverb",
+      "opt1": "Room",
+      "time": 0.55,
+      "intensity": 0.45,
+      "amount": 0.3
+    }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Osc1 Wave", "amount": "+20%" },
+    { "src": "LFO1", "dest": "Osc1 Timbre", "amount": "+15%" },
+    { "src": "CycEnv", "dest": "Cutoff", "amount": "+35%" },
+    { "src": "Velocity", "dest": "VCA", "amount": "+40%" },
+    { "src": "Velocity", "dest": "Decay", "amount": "-20%" },
+    { "src": "LFO2", "dest": "FX1 Intensity", "amount": "+15%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Decay", "amount": "+50%" },
+        { "dest": "FX2 Amount", "amount": "+60%" },
+        { "dest": "FX1 Intensity", "amount": "+40%" },
+        { "dest": "Release", "amount": "+30%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX3 Amount", "amount": "+70%" },
+        { "dest": "Cutoff", "amount": "+50%" },
+        { "dest": "FX2 Intensity", "amount": "+40%" },
+        { "dest": "FX1 Time", "amount": "+30%" }
+      ]
+    }
+  },
+
+  "arp": {
+    "mode": "Random",
+    "octaves": 3,
+    "gate": 0.35,
+    "spice": 0.65
+  },
+
+  "volume": 0.9
+}

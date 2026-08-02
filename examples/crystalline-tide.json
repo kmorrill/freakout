@@ -1,0 +1,163 @@
+{
+  "name": "Crystalline Tide",
+  "description": "Sea glass and crystal wind chimes at sunset. Modal resonator creates organic bell tones, processed through Comb Filter for shimmering metallic harmonics. Two slow LFOs create a breathing tidal motion - one moves the filter and brightness, the other drifts the comb resonance pitch. The cycling envelope adds gentle rhythmic undulation. Play slow, sustained chords and let the arpeggiator unfold them into cascading waves. Raise Macro 1 (BLOOM) to open the sky. Raise Macro 2 (SHIMMER) to intensify the crystalline character. Most beautiful at 68-80 BPM.",
+  "type": "Pad",
+  "subtype": "Ambient",
+  "author": "Claude",
+
+  "voice": {
+    "mode": "Para",
+    "glide": 0.08
+  },
+
+  "osc1": {
+    "engine": "Modal",
+    "wave": 0.35,
+    "timbre": 0.65,
+    "shape": 0.75,
+    "volume": 0.80
+  },
+
+  "osc2": {
+    "engine": "Comb Filter",
+    "wave": 0.55,
+    "timbre": 0.45,
+    "shape": 0.60,
+    "volume": 0.55,
+    "tune": 0.75
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.40,
+    "resonance": 0.12,
+    "env_amount": 0.25
+  },
+
+  "envelope": {
+    "attack": 0.25,
+    "decay": 0.55,
+    "sustain": 0.70,
+    "release": 0.72
+  },
+
+  "lfo1": {
+    "rate": 0.035,
+    "wave": "Sine",
+    "retrig": "Free"
+  },
+
+  "lfo2": {
+    "rate": 0.022,
+    "wave": "Triangle",
+    "retrig": "Free"
+  },
+
+  "cycling_env": {
+    "rise": 0.55,
+    "fall": 0.65,
+    "hold": 0.15,
+    "mode": "Loop"
+  },
+
+  "fx": [
+    {
+      "algo": "Chorus",
+      "opt1": "Lush",
+      "time": 0.30,
+      "intensity": 0.55,
+      "amount": 0.45
+    },
+    {
+      "algo": "Reverb",
+      "opt1": "Long",
+      "time": 0.80,
+      "intensity": 0.28,
+      "amount": 0.55
+    },
+    {
+      "algo": "Delay",
+      "opt1": "Stereo Sync",
+      "time": 0.5,
+      "intensity": 0.30,
+      "amount": 0.25
+    }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Cutoff", "amount": "+18%" },
+    { "src": "LFO1", "dest": "Osc1 Timbre", "amount": "+12%" },
+    { "src": "LFO2", "dest": "Osc2 Wave", "amount": "+15%" },
+    { "src": "LFO2", "dest": "FX2 Amount", "amount": "+10%" },
+    { "src": "CycEnv", "dest": "Osc1 Wave", "amount": "+20%" },
+    { "src": "CycEnv", "dest": "Osc2 Timbre", "amount": "+12%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+28%" },
+    { "src": "Velocity", "dest": "Osc1 Timbre", "amount": "+15%" },
+    { "src": "Envelope", "dest": "Osc1 Shape", "amount": "-20%" },
+    { "src": "Kbd", "dest": "Cutoff", "amount": "+22%" },
+    { "src": "Wheel", "dest": "FX2 Amount", "amount": "+45%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+55%" },
+        { "dest": "Osc1 Timbre", "amount": "+35%" },
+        { "dest": "FX2 Amount", "amount": "+30%" },
+        { "dest": "Resonance", "amount": "+15%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "Osc2 Volume", "amount": "+40%" },
+        { "dest": "Osc2 Timbre", "amount": "+50%" },
+        { "dest": "FX1 Intensity", "amount": "+35%" },
+        { "dest": "FX3 Amount", "amount": "+25%" }
+      ]
+    }
+  },
+
+  "arp": {
+    "mode": "Up/Down",
+    "octaves": 2,
+    "gate": 0.75
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 72,
+    "time_div": "1/8",
+    "swing": 0.52,
+    "lane_dests": ["Cutoff", "Osc1 Timbre", "FX2 Amount"],
+    "steps": [
+      { "step": 0,  "notes": ["C3", "E3", "G3", "B3"],   "vel": 85,  "gate": 0.90, "mods": [0.45, 0.50, 0.40] },
+      { "step": 1,  "notes": ["C3", "E3", "G3", "B3"],   "vel": 65,  "gate": 0.80, "mods": [0.50, 0.52, 0.45] },
+      { "step": 2,  "notes": ["C3", "E3", "G3", "B3"],   "vel": 55,  "gate": 0.70, "mods": [0.55, 0.55, 0.50] },
+      { "step": 3,  "notes": ["C3", "E3", "G3", "B3"],   "vel": 50,  "gate": 0.65, "mods": [0.52, 0.52, 0.48] },
+
+      { "step": 4,  "notes": ["A2", "C3", "E3", "G3"],   "vel": 90,  "gate": 0.92, "mods": [0.48, 0.55, 0.52] },
+      { "step": 5,  "notes": ["A2", "C3", "E3", "G3"],   "vel": 70,  "gate": 0.82, "mods": [0.55, 0.58, 0.55] },
+      { "step": 6,  "notes": ["A2", "C3", "E3", "G3"],   "vel": 58,  "gate": 0.72, "mods": [0.60, 0.60, 0.58] },
+      { "step": 7,  "notes": ["A2", "C3", "E3", "G3"],   "vel": 52,  "gate": 0.68, "mods": [0.55, 0.58, 0.55] },
+
+      { "step": 8,  "notes": ["F2", "A2", "C3", "E3"],   "vel": 82,  "gate": 0.88, "mods": [0.50, 0.52, 0.48] },
+      { "step": 9,  "notes": ["F2", "A2", "C3", "E3"],   "vel": 62,  "gate": 0.78, "mods": [0.52, 0.54, 0.50] },
+      { "step": 10, "notes": ["F2", "A2", "C3", "E3"],   "vel": 55,  "gate": 0.70, "mods": [0.55, 0.56, 0.52] },
+      { "step": 11, "notes": ["F2", "A2", "C3", "E3"],   "vel": 48,  "gate": 0.62, "mods": [0.52, 0.54, 0.50] },
+
+      { "step": 12, "notes": ["G2", "B2", "D3", "F3"],   "vel": 88,  "gate": 0.90, "mods": [0.42, 0.48, 0.45] },
+      { "step": 13, "notes": ["G2", "B2", "D3", "F3"],   "vel": 68,  "gate": 0.80, "mods": [0.45, 0.50, 0.48] },
+      { "step": 14, "notes": ["G2", "B2", "D3", "F3"],   "vel": 58,  "gate": 0.72, "mods": [0.48, 0.52, 0.50] },
+      { "step": 15, "notes": ["G2", "B2", "D3", "F3"],   "vel": 50,  "gate": 0.65, "mods": [0.45, 0.50, 0.48] }
+    ]
+  },
+
+  "raw_params": {
+    "Env_AttackCurve": 0.55,
+    "Env_DecayCurve": 0.45,
+    "Env_ReleaseCurve": 0.40,
+    "CycEnv_RiseCurve": 0.52,
+    "CycEnv_FallCurve": 0.48,
+    "Vibrato_On": 0.0
+  }
+}

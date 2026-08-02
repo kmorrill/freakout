@@ -1,0 +1,150 @@
+{
+  "name": "Ember Wobble",
+  "description": "Warm unison lead with rhythmic wobble, animated timbre, and expressive performance controls.",
+  "type": "Lead",
+  "subtype": "Rhythmic",
+  "voice": {
+    "mode": "Unison",
+    "unison_voices": 4,
+    "unison_mode": "Uni Poly",
+    "glide": 0.18,
+    "retrig": "Env Reset",
+    "legato": true
+  },
+
+  "osc1": {
+    "engine": "VAnalog",
+    "wave": 0.66,
+    "timbre": 0.45,
+    "shape": 0.32,
+    "volume": 0.90,
+    "tune": 0.50,
+    "fine_tune": 0.50,
+    "sub": 0.12
+  },
+
+  "osc2": {
+    "engine": "SuperWave",
+    "wave": 0.60,
+    "timbre": 0.35,
+    "shape": 0.42,
+    "volume": 0.70,
+    "tune": 0.505,
+    "fine_tune": 0.52
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.36,
+    "resonance": 0.22,
+    "env_amount": 0.52
+  },
+
+  "envelope": {
+    "attack": 0.02,
+    "decay": 0.42,
+    "sustain": 0.55,
+    "release": 0.33,
+    "attack_curve": 0.50,
+    "decay_curve": 0.55,
+    "release_curve": 0.50
+  },
+
+  "lfo1": {
+    "rate": 0.55,
+    "wave": "Triangle",
+    "sync": true,
+    "rate_sync": "1/8",
+    "retrig": "Poly Kbd"
+  },
+
+  "lfo2": {
+    "rate": 0.25,
+    "wave": "Sine",
+    "sync": true,
+    "rate_sync": "1/2",
+    "retrig": "Free"
+  },
+
+  "cycling_env": {
+    "mode": "Loop",
+    "rise": 0.22,
+    "fall": 0.35,
+    "hold": 0.08,
+    "stage_order": "Rise Hold Fall"
+  },
+
+  "fx": [
+    { "algo": "Chorus", "opt1": "Lush", "time": 0.32, "intensity": 0.46, "amount": 0.35 },
+    { "algo": "Delay", "opt1": "Stereo Sync", "time": 0.50, "intensity": 0.34, "amount": 0.28 },
+    { "algo": "Reverb", "opt1": "Hall", "time": 0.58, "intensity": 0.32, "amount": 0.22 }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Cutoff", "amount": "+35%" },
+    { "src": "LFO1", "dest": "Osc1 Wave", "amount": "+18%" },
+    { "src": "LFO2", "dest": "Osc1 Timbre", "amount": "+15%" },
+    { "src": "CycEnv", "dest": "Osc2 Timbre", "amount": "+22%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+32%" },
+    { "src": "Velocity", "dest": "Filter Env Amount", "amount": "+20%" },
+    { "src": "Keyboard", "dest": "Cutoff", "amount": "+22%" },
+    { "src": "Wheel", "dest": "Vib AM", "amount": "+55%" },
+    { "src": "Wheel", "dest": "FX2 Amount", "amount": "+40%" },
+    { "src": "Wheel", "dest": "FX1 Amount", "amount": "+20%" },
+    { "src": "Envelope", "dest": "Pitch 1", "amount": "-6%" },
+    { "src": "Envelope", "dest": "Pitch 2", "amount": "-6%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "name": "WARMTH",
+      "dests": [
+        { "dest": "Cutoff", "amount": "+50%" },
+        { "dest": "Resonance", "amount": "+15%" },
+        { "dest": "FX3 Amount", "amount": "+15%" }
+      ]
+    },
+    "macro2": {
+      "name": "WOBBLE",
+      "dests": [
+        { "dest": "LFO1 Rate", "amount": "+35%" },
+        { "dest": "Osc1 Wave", "amount": "+25%" },
+        { "dest": "FX1 Intensity", "amount": "+25%" },
+        { "dest": "FX2 Amount", "amount": "+20%" }
+      ]
+    }
+  },
+
+  "velo_at": "VeloPlusAt",
+
+  "sequence": {
+    "mode": "Seq",
+    "length": 16,
+    "tempo": 126,
+    "time_div": "1/16",
+    "swing": 0.57,
+    "gate": 0.58,
+    "lane_dests": ["Cutoff", "Osc1 Wave", "Glide", "FX1 Amount"],
+    "steps": [
+      { "step": 0,  "notes": ["D4"],  "vel": 112, "gate": 0.72, "mods": [0.55, 0.42, 0.28, 0.32] },
+      { "step": 1,  "notes": ["F4"],  "vel": 96,  "gate": 0.45, "mods": [0.46, 0.34, 0.20, 0.28] },
+      { "step": 2,  "notes": ["A4"],  "vel": 118, "gate": 0.70, "mods": [0.62, 0.48, 0.30, 0.36] },
+      { "step": 3,  "notes": ["C5"],  "vel": 90,  "gate": 0.40, "mods": [0.44, 0.36, 0.18, 0.26] },
+
+      { "step": 4,  "notes": ["D5"],  "vel": 124, "gate": 0.78, "mods": [0.68, 0.54, 0.48, 0.40] },
+      { "step": 5,  "notes": ["A4"],  "vel": 86,  "gate": 0.32, "mods": [0.40, 0.30, 0.22, 0.24] },
+      { "step": 6,  "notes": ["F4"],  "vel": 104, "gate": 0.52, "mods": [0.52, 0.38, 0.26, 0.30] },
+      { "step": 7,  "notes": ["E4"],  "vel": 82,  "gate": 0.36, "mods": [0.38, 0.28, 0.20, 0.22] },
+
+      { "step": 8,  "notes": ["G4"],  "vel": 108, "gate": 0.58, "mods": [0.56, 0.40, 0.30, 0.34] },
+      { "step": 9,  "notes": ["A4"],  "vel": 98,  "gate": 0.44, "mods": [0.46, 0.34, 0.22, 0.28] },
+      { "step": 10, "notes": ["C5"],  "vel": 120, "gate": 0.70, "mods": [0.64, 0.50, 0.44, 0.42] },
+      { "step": 11, "notes": ["D5"],  "vel": 92,  "gate": 0.46, "mods": [0.48, 0.36, 0.24, 0.30] },
+
+      { "step": 12, "notes": ["A4"],  "vel": 106, "gate": 0.54, "mods": [0.54, 0.40, 0.28, 0.32] },
+      { "step": 13, "notes": ["F4"],  "vel": 94,  "gate": 0.40, "mods": [0.44, 0.32, 0.22, 0.26] },
+      { "step": 14, "notes": ["E4"],  "vel": 100, "gate": 0.48, "mods": [0.48, 0.34, 0.26, 0.28] },
+      { "step": 15, "notes": ["D4"],  "vel": 116, "gate": 0.72, "mods": [0.60, 0.46, 0.38, 0.36] }
+    ]
+  }
+}

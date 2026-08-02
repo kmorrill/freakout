@@ -1,0 +1,81 @@
+{
+  "name": "Minor-7 Knife",
+  "description": "Rave stab with SuperWave width, instant attack/decay, and Macro 2 for the drop (pushes reverb/delay wet + feedback)",
+  "type": "Lead",
+  "subtype": "Stab",
+  "author": "Claude",
+
+  "voice": { "mode": "Poly" },
+
+  "osc1": {
+    "engine": "SuperWave",
+    "wave": 0.0,
+    "timbre": 0.65,
+    "shape": 0.7,
+    "volume": 1.0
+  },
+
+  "osc2": {
+    "engine": "BasicWaves",
+    "wave": 0.15,
+    "timbre": 0.4,
+    "shape": 0.0,
+    "volume": 0.3,
+    "tune": 0.75
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.75,
+    "resonance": 0.15,
+    "env_amount": 0.45
+  },
+
+  "envelope": {
+    "attack": 0.0,
+    "decay": 0.25,
+    "sustain": 0.0,
+    "release": 0.18
+  },
+
+  "lfo1": { "rate": 0.06, "wave": "Sine" },
+
+  "fx": [
+    { "algo": "Chorus", "opt1": "Lush", "time": 0.35, "intensity": 0.5, "amount": 0.55 },
+    { "algo": "Reverb", "opt1": "Room", "time": 0.55, "intensity": 0.4, "amount": 0.25 },
+    { "algo": "Delay", "opt1": "Digital Sync", "time": 0.3, "intensity": 0.2, "amount": 0.2 }
+  ],
+
+  "mod": [
+    { "src": "Velocity", "dest": "Decay", "amount": "-25%" },
+    { "src": "LFO1", "dest": "Pitch 1", "amount": "+4%" },
+    { "src": "LFO1", "dest": "Pitch 2", "amount": "+3%" }
+  ],
+
+  "macros": {
+    "macro2": {
+      "dests": [
+        { "dest": "FX2 Amount", "amount": "+60%" },
+        { "dest": "FX3 Amount", "amount": "+50%" },
+        { "dest": "FX3 Intensity", "amount": "+45%" },
+        { "dest": "FX2 Time", "amount": "+35%" }
+      ]
+    }
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 135,
+    "time_div": "1/8",
+    "steps": [
+      { "step": 0, "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 120, "gate": 0.15 },
+      { "step": 3, "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 100, "gate": 0.12 },
+      { "step": 4, "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 110, "gate": 0.15 },
+      { "step": 7, "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 90, "gate": 0.1 },
+      { "step": 8, "notes": ["C3", "Eb3", "G3", "Bb3"], "vel": 120, "gate": 0.18 },
+      { "step": 10, "notes": ["Bb2", "Db3", "F3", "Ab3"], "vel": 105, "gate": 0.12 },
+      { "step": 12, "notes": ["Ab2", "C3", "Eb3", "Gb3"], "vel": 115, "gate": 0.15 },
+      { "step": 14, "notes": ["Bb2", "Db3", "F3", "Ab3"], "vel": 95, "gate": 0.1 }
+    ]
+  }
+}

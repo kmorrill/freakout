@@ -1,0 +1,212 @@
+{
+  "name": "Penta Garden",
+  "description": "One-key pentatonic melody machine. Osc1 (Harmo) gives sustained organ warmth; Osc2 (Karplus) adds plucked transients — each note starts with a physical pluck and rings into additive harmonics, like a kalimba in a church. LFO1 Shaper draws a 16-note pentatonic melody over 2 bars (1/8 notes), quantized to minor pentatonic on both oscs. The sequencer runs at 1/8 notes with a C-Eb-F-G-Bb root progression, so the melody transposes through different pentatonic centers — plus 4 automation lanes sculpting filter, reverb, Karplus damping, and unison width across the phrase. Macro 1 (BLOOM) opens everything wide. Macro 2 (DRIFT) slows the melody and smears it into ambient echoes. 108 BPM.",
+  "type": "Keys",
+  "subtype": "Melodic",
+  "author": "Claude",
+
+  "voice": { "mode": "Mono", "glide": 0.08 },
+
+  "osc1": {
+    "engine": "Harmo",
+    "wave": 0.35,
+    "timbre": 0.50,
+    "shape": 0.30,
+    "volume": 0.80,
+    "mod_quantize": "MinorPenta"
+  },
+
+  "osc2": {
+    "engine": "Karplus",
+    "wave": 0.50,
+    "timbre": 0.30,
+    "shape": 0.55,
+    "volume": 0.50,
+    "fine_tune": 0.51,
+    "mod_quantize": "MinorPenta"
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.48,
+    "resonance": 0.15,
+    "env_amount": 0.35
+  },
+
+  "envelope": {
+    "attack": 0.03,
+    "decay": 0.40,
+    "sustain": 0.65,
+    "release": 0.45
+  },
+
+  "lfo1": {
+    "wave": "Shaper",
+    "sync": true,
+    "rate_sync": "2",
+    "retrig": "MonoKbd"
+  },
+
+  "lfo2": {
+    "rate": 0.04,
+    "wave": "Tri",
+    "retrig": "Free"
+  },
+
+  "cycling_env": {
+    "rise": 0.20,
+    "fall": 0.35,
+    "hold": 0.0,
+    "mode": "Loop",
+    "retrig": "LFO1"
+  },
+
+  "fx": [
+    {
+      "slot": 1,
+      "algo": "Super Unison",
+      "opt1": "Wavy",
+      "time": 0.35,
+      "intensity": 0.30,
+      "amount": 0.35
+    },
+    {
+      "slot": 2,
+      "algo": "Delay",
+      "opt1": "Filtered P-P Sync",
+      "time": 0.5,
+      "intensity": 0.35,
+      "amount": 0.25
+    },
+    {
+      "slot": 3,
+      "algo": "Reverb",
+      "opt1": "Hall",
+      "time": 0.60,
+      "intensity": 0.35,
+      "amount": 0.35
+    }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Pitch 1", "amount": "+50%" },
+    { "src": "LFO2", "dest": "Osc1 Timbre", "amount": "+15%" },
+    { "src": "LFO2", "dest": "Cutoff", "amount": "+10%" },
+    { "src": "CycEnv", "dest": "Osc1 Wave", "amount": "+15%" },
+    { "src": "CycEnv", "dest": "FX3 Amount", "amount": "+20%" },
+    { "src": "Velocity", "dest": "Cutoff", "amount": "+30%" },
+    { "src": "Velocity", "dest": "FX2 Intensity", "amount": "+25%" },
+    { "src": "Kbd", "dest": "Cutoff", "amount": "+25%" }
+  ],
+
+  "macros": {
+    "macro1": {
+      "dests": [
+        { "dest": "Cutoff", "amount": "+55%" },
+        { "dest": "FX3 Amount", "amount": "+45%" },
+        { "dest": "Osc1 Timbre", "amount": "+35%" },
+        { "dest": "Osc2 Timbre", "amount": "+25%" }
+      ]
+    },
+    "macro2": {
+      "dests": [
+        { "dest": "FX2 Intensity", "amount": "+55%" },
+        { "dest": "FX2 Amount", "amount": "+50%" },
+        { "dest": "LFO1 Rate", "amount": "-40%" },
+        { "dest": "Osc1 Shape", "amount": "+30%" }
+      ]
+    }
+  },
+
+  "sequence": {
+    "mode": "Seq",
+    "length": 16,
+    "tempo": 108,
+    "time_div": "1/8",
+    "swing": 0.52,
+    "gate": 0.75,
+    "lane_dests": ["Cutoff", "FX3 Amount", "Osc2 Shape", "FX1 Amount"],
+    "steps": [
+      { "step": 0,  "notes": ["C3"],  "vel": 90,  "gate": 0.80, "mods": [0.42, 0.35, 0.50, 0.35] },
+      { "step": 1,  "notes": ["C3"],  "vel": 85,  "gate": 0.75, "mods": [0.44, 0.38, 0.50, 0.38] },
+      { "step": 2,  "notes": ["Eb3"], "vel": 95,  "gate": 0.85, "mods": [0.48, 0.42, 0.52, 0.40] },
+      { "step": 3,  "notes": ["Eb3"], "vel": 90,  "gate": 0.80, "mods": [0.50, 0.45, 0.52, 0.42] },
+      { "step": 4,  "notes": ["F3"],  "vel": 105, "gate": 0.90, "mods": [0.58, 0.50, 0.55, 0.50] },
+      { "step": 5,  "notes": ["G3"],  "vel": 115, "gate": 0.95, "mods": [0.68, 0.55, 0.58, 0.58] },
+      { "step": 6,  "notes": ["F3"],  "vel": 100, "gate": 0.85, "mods": [0.60, 0.52, 0.55, 0.50] },
+      { "step": 7,  "notes": ["Eb3"], "vel": 88,  "gate": 0.78, "mods": [0.52, 0.48, 0.52, 0.45] },
+      { "step": 8,  "notes": ["C3"],  "vel": 85,  "gate": 0.75, "mods": [0.44, 0.48, 0.50, 0.38] },
+      { "step": 9,  "notes": ["Bb2"], "vel": 95,  "gate": 0.88, "mods": [0.40, 0.55, 0.45, 0.42] },
+      { "step": 10, "notes": ["C3"],  "vel": 90,  "gate": 0.80, "mods": [0.46, 0.50, 0.50, 0.42] },
+      { "step": 11, "notes": ["Eb3"], "vel": 95,  "gate": 0.85, "mods": [0.52, 0.48, 0.52, 0.45] },
+      { "step": 12, "notes": ["G3"],  "vel": 120, "gate": 0.95, "mods": [0.70, 0.55, 0.60, 0.58] },
+      { "step": 13, "notes": ["F3"],  "vel": 105, "gate": 0.88, "mods": [0.58, 0.48, 0.55, 0.48] },
+      { "step": 14, "notes": ["Eb3"], "vel": 90,  "gate": 0.80, "mods": [0.48, 0.42, 0.52, 0.40] },
+      { "step": 15, "notes": ["C3"],  "vel": 78,  "gate": 0.70, "mods": [0.42, 0.35, 0.48, 0.32] }
+    ]
+  },
+
+  "raw_params": {
+    "Shp1_Length": 1.0,
+
+    "Shp1_Step_En_0":  0.50001526,
+    "Shp1_Step_En_1":  0.50001526,
+    "Shp1_Step_En_2":  0.50001526,
+    "Shp1_Step_En_3":  0.50001526,
+    "Shp1_Step_En_4":  0.50001526,
+    "Shp1_Step_En_5":  0.50001526,
+    "Shp1_Step_En_6":  0.50001526,
+    "Shp1_Step_En_7":  0.50001526,
+    "Shp1_Step_En_8":  0.50001526,
+    "Shp1_Step_En_9":  0.50001526,
+    "Shp1_Step_En_10": 0.50001526,
+    "Shp1_Step_En_11": 0.50001526,
+    "Shp1_Step_En_12": 0.50001526,
+    "Shp1_Step_En_13": 0.50001526,
+    "Shp1_Step_En_14": 0.50001526,
+    "Shp1_Step_En_Last": 0.50001526,
+
+    "Shp1_Step_Amp_0":  0.500,
+    "Shp1_Step_Amp_1":  0.625,
+    "Shp1_Step_Amp_2":  0.708,
+    "Shp1_Step_Amp_3":  0.625,
+    "Shp1_Step_Amp_4":  0.792,
+    "Shp1_Step_Amp_5":  0.708,
+    "Shp1_Step_Amp_6":  0.625,
+    "Shp1_Step_Amp_7":  0.500,
+    "Shp1_Step_Amp_8":  0.417,
+    "Shp1_Step_Amp_9":  0.500,
+    "Shp1_Step_Amp_10": 0.708,
+    "Shp1_Step_Amp_11": 0.917,
+    "Shp1_Step_Amp_12": 0.792,
+    "Shp1_Step_Amp_13": 0.625,
+    "Shp1_Step_Amp_14": 0.500,
+    "Shp1_Step_Amp_Last": 0.500,
+
+    "Shp1_Step_Curve_0":  0.5,
+    "Shp1_Step_Curve_1":  0.5,
+    "Shp1_Step_Curve_2":  0.5,
+    "Shp1_Step_Curve_3":  0.5,
+    "Shp1_Step_Curve_4":  0.5,
+    "Shp1_Step_Curve_5":  0.5,
+    "Shp1_Step_Curve_6":  0.5,
+    "Shp1_Step_Curve_7":  0.5,
+    "Shp1_Step_Curve_8":  0.5,
+    "Shp1_Step_Curve_9":  0.5,
+    "Shp1_Step_Curve_10": 0.5,
+    "Shp1_Step_Curve_11": 0.5,
+    "Shp1_Step_Curve_12": 0.5,
+    "Shp1_Step_Curve_13": 0.5,
+    "Shp1_Step_Curve_14": 0.5,
+    "Shp1_Step_Curve_Last": 0.5,
+
+    "Env_AttackCurve": 0.55,
+    "Env_DecayCurve": 0.45,
+    "Env_ReleaseCurve": 0.45,
+    "CycEnv_RiseCurve": 0.50,
+    "CycEnv_FallCurve": 0.45,
+    "Gen_RetrigMode": 0.0,
+    "Gen_LegatoMode": 0.0,
+    "Vibrato_On": 0.0
+  }
+}

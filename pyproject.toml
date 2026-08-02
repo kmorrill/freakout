@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "minifreak-patch"
+version = "0.2.0"
+description = "Lossless JSON patch tools and transport discovery for Arturia MiniFreak and MicroFreak"
+requires-python = ">=3.12"
+license = {file = "LICENSE"}
+readme = "README.md"
+dependencies = [
+    "click>=8.0",
+    "pydantic>=2.0",
+    "protobuf>=5.0",
+    "mido>=1.3",
+    "python-rtmidi>=1.5",
+    "pyusb>=1.3",
+]
+
+[project.scripts]
+minifreak-patch = "minifreak_patch.cli:main"
+freak-patch = "minifreak_patch.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/minifreak_patch"]

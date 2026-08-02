@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+work/
+.pytest_cache/
+.venv/
+dist/
+build/
+*.egg-info/
+
+# Local device exports and vendor-derived working fixtures are not published.
+presets/*.mnfx
+*.mfp
+*.mfpz
+*.mfw
+*.mfwz
+*.mfs
+*.mfsz
+
+# Unrelated Rytm song documents that were copied into examples locally.
+examples/chugging-forward.json
+examples/chugging-forward-v2.json
+examples/deep-warehouse.json
+examples/feature-demo.json
+examples/industrial-drive.json

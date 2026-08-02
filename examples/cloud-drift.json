@@ -1,0 +1,75 @@
+{
+  "name": "Cloud Drift",
+  "description": "Lush evolving pad with additive Harmo oscillator, slow LFOs, and deep reverb",
+  "type": "Pad",
+  "subtype": "Evolving",
+  "author": "Claude",
+
+  "voice": { "mode": "Poly" },
+
+  "osc1": {
+    "engine": "Harmo",
+    "wave": 0.3,
+    "timbre": 0.6,
+    "shape": 0.2,
+    "volume": 1.0
+  },
+
+  "osc2": {
+    "engine": "BasicWaves",
+    "wave": 0.5,
+    "timbre": 0.4,
+    "shape": 0.0,
+    "volume": 0.8,
+    "tune": 0.507
+  },
+
+  "filter": {
+    "mode": "LPF",
+    "cutoff": 0.55,
+    "resonance": 0.15,
+    "env_amount": 0.2
+  },
+
+  "envelope": {
+    "attack": 0.45,
+    "decay": 0.6,
+    "sustain": 0.7,
+    "release": 0.65
+  },
+
+  "lfo1": { "rate": 0.08, "wave": "Triangle", "retrig": "Free" },
+  "lfo2": { "rate": 0.03, "wave": "Sine", "retrig": "Free" },
+  "cycling_env": { "mode": "Loop", "rise": 0.5, "fall": 0.5 },
+
+  "fx": [
+    { "algo": "Chorus", "opt1": "Lush", "time": 0.4, "intensity": 0.5, "amount": 0.5 },
+    { "algo": "Reverb", "opt1": "Long", "time": 0.7, "intensity": 0.3, "amount": 0.45 },
+    { "algo": "Phaser", "opt1": "Space", "time": 0.2, "intensity": 0.3, "amount": 0.2 }
+  ],
+
+  "mod": [
+    { "src": "LFO1", "dest": "Cutoff", "amount": "+20%" },
+    { "src": "LFO2", "dest": "Osc1 Timbre", "amount": "+15%" },
+    { "src": "CycEnv", "dest": "Osc1 Wave", "amount": "+25%" },
+    { "src": "Keyboard", "dest": "Cutoff", "amount": "+30%" },
+    { "src": "Envelope", "dest": "Osc1 Wave", "amount": "-10%" },
+    { "src": "Wheel", "dest": "FX2 Amount", "amount": "+40%" }
+  ],
+
+  "sequence": {
+    "mode": "Seq",
+    "tempo": 90,
+    "time_div": "1/8",
+    "steps": [
+      { "step": 0,  "notes": ["C3", "E3", "G3"],  "vel": 80, "gate": 0.9 },
+      { "step": 2,  "notes": ["C3", "Eb3", "G3"], "vel": 75, "gate": 0.9 },
+      { "step": 4,  "notes": ["Bb2", "D3", "F3"],  "vel": 70, "gate": 0.9 },
+      { "step": 6,  "notes": ["Ab2", "C3", "Eb3"], "vel": 75, "gate": 0.9 },
+      { "step": 8,  "notes": ["F2", "Ab2", "C3"],  "vel": 80, "gate": 0.9 },
+      { "step": 10, "notes": ["G2", "Bb2", "D3"],  "vel": 75, "gate": 0.9 },
+      { "step": 12, "notes": ["Ab2", "C3", "Eb3"], "vel": 70, "gate": 0.9 },
+      { "step": 14, "notes": ["G2", "B2", "D3"],   "vel": 80, "gate": 0.9 }
+    ]
+  }
+}

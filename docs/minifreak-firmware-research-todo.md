@@ -1,5 +1,11 @@
 # MiniFreak firmware research TODO
 
+Use the reusable
+[firmware-to-SysEx analysis playbook](firmware-analysis-playbook.md) as the
+handoff from the completed MicroFreak analysis. It records the exact evidence
+ladder, stored-view trap, dispatcher workflow, passive-wire correlation,
+sentinel strategy, and reversible hardware protocol used in this session.
+
 The MiniFreak transport is already better understood at the wire than the
 MicroFreak transport: the independent backend can use Collage over USB to read
 the active edit buffer and all 512 saved slots, replay verified live deltas,

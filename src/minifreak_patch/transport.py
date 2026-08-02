@@ -15,7 +15,7 @@ import subprocess
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Sequence
+from typing import Any, Callable, Sequence
 
 from minifreak_patch.microfreak import MICROFREAK_PRESET_PAYLOAD_SIZE, MicroFreakPreset
 from minifreak_patch.schema import DeviceModel
@@ -32,13 +32,18 @@ class WriteDisabledError(TransportError):
 
 @dataclass
 class DeviceEndpoint:
-    transport_id: int
+    transport_id: int | str
     input_name: str
     output_name: str
     device: DeviceModel
     firmware: str | None = None
     connector: str | None = None
     filesystems: list[str] = field(default_factory=list)
+    backend: str = "elektroid"
+    usb_vendor_id: int | None = None
+    usb_product_id: int | None = None
+    usb_release_bcd: int | None = None
+    serial_number: str | None = None
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -49,7 +54,119 @@ class DeviceEndpoint:
             "firmware": self.firmware,
             "connector": self.connector,
             "filesystems": self.filesystems,
+            "backend": self.backend,
+            "usb_vendor_id": self.usb_vendor_id,
+            "usb_product_id": self.usb_product_id,
+            "usb_release_bcd": self.usb_release_bcd,
+            "serial_number": self.serial_number,
         }
+
+
+class DirectTransportDiscovery:
+    """Bounded read-only discovery for this library's independent backends.
+
+    MicroFreak patch transport uses one paired MIDI input/output endpoint.
+    MiniFreak patch transport uses Arturia's vendor-specific Collage USB
+    interface; its similarly named MIDI endpoint is useful for notes and CCs,
+    but is not reported as the patch-transfer bus.
+    """
+
+    def __init__(
+        self,
+        *,
+        midi_backend: Any | None = None,
+        usb_core: Any | None = None,
+    ) -> None:
+        if midi_backend is None:
+            try:
+                import mido as midi_backend
+            except ImportError as exc:  # pragma: no cover - installation error
+                raise TransportError(
+                    "direct discovery requires mido and python-rtmidi"
+                ) from exc
+        if usb_core is None:
+            try:
+                import usb.core as usb_core
+            except ImportError as exc:  # pragma: no cover - installation error
+                raise TransportError("direct discovery requires pyusb") from exc
+        self.midi = midi_backend
+        self.usb_core = usb_core
+
+    @staticmethod
+    def _safe_usb_text(device: Any, attribute: str) -> str | None:
+        try:
+            value = getattr(device, attribute, None)
+        except Exception:
+            return None
+        if value is None:
+            return None
+        text = str(value).strip()
+        return text or None
+
+    def discover(self) -> list[DeviceEndpoint]:
+        from minifreak_patch.minifreak_usb import (
+            MINIFREAK_USB_PRODUCT_ID,
+            MINIFREAK_USB_VENDOR_ID,
+        )
+
+        try:
+            inputs = set(self.midi.get_input_names())
+            outputs = set(self.midi.get_output_names())
+        except Exception as exc:
+            raise TransportError(f"could not enumerate MIDI endpoints: {exc}") from exc
+
+        endpoints: list[DeviceEndpoint] = []
+        paired = sorted(inputs.intersection(outputs))
+        microfreak_ports = [
+            name for name in paired if "microfreak" in name.lower()
+        ]
+        for name in microfreak_ports:
+            endpoints.append(
+                DeviceEndpoint(
+                    transport_id=f"coremidi:{name}",
+                    input_name=name,
+                    output_name=name,
+                    device=DeviceModel.MICROFREAK,
+                    connector="arturia-microfreak-sysex",
+                    filesystems=["preset", "wavetable", "sample", "globals"],
+                    backend="direct",
+                )
+            )
+
+        minifreak_midi = next(
+            (name for name in paired if "minifreak" in name.lower()), None
+        )
+        try:
+            usb_devices = self.usb_core.find(
+                find_all=True,
+                idVendor=MINIFREAK_USB_VENDOR_ID,
+                idProduct=MINIFREAK_USB_PRODUCT_ID,
+            )
+            devices = list(usb_devices or ())
+        except Exception as exc:
+            raise TransportError(f"could not enumerate MiniFreak USB: {exc}") from exc
+
+        for ordinal, device in enumerate(devices, start=1):
+            product = self._safe_usb_text(device, "product") or "Arturia MiniFreak"
+            serial = self._safe_usb_text(device, "serial_number")
+            release = getattr(device, "bcdDevice", None)
+            endpoints.append(
+                DeviceEndpoint(
+                    transport_id=f"usb:{MINIFREAK_USB_VENDOR_ID:04x}:{MINIFREAK_USB_PRODUCT_ID:04x}:{ordinal}",
+                    input_name=minifreak_midi or product,
+                    output_name=minifreak_midi or product,
+                    device=DeviceModel.MINIFREAK,
+                    connector="arturia-minifreak-collage-usb",
+                    filesystems=["active-preset", "saved-preset", "metadata"],
+                    backend="direct",
+                    usb_vendor_id=MINIFREAK_USB_VENDOR_ID,
+                    usb_product_id=MINIFREAK_USB_PRODUCT_ID,
+                    usb_release_bcd=int(release) if release is not None else None,
+                    serial_number=serial,
+                )
+            )
+
+        return sorted(endpoints, key=lambda item: (item.device.value, str(item.transport_id)))
 
 
 @dataclass

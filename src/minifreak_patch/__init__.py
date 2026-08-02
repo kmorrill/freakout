@@ -37,7 +37,11 @@ from minifreak_patch.schema import (
     SupportLevel,
     capabilities_for,
 )
-from minifreak_patch.transport import ElektroidTransport, WavetableWriteReport
+from minifreak_patch.transport import (
+    DirectTransportDiscovery,
+    ElektroidTransport,
+    WavetableWriteReport,
+)
 from minifreak_patch.collage import (
     CollageCodec,
     CollageFrame,
@@ -63,6 +67,7 @@ __all__ = [
     "DeviceModel",
     "SupportLevel",
     "ElektroidTransport",
+    "DirectTransportDiscovery",
     "WavetableWriteReport",
     "CollageCodec",
     "CollageFrame",

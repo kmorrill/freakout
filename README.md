@@ -1,7 +1,8 @@
-# freak-patch
+# Freakout
 
-Lossless JSON patch tools and transport discovery for the Arturia MiniFreak
-and MicroFreak.
+Open, lossless JSON patch tools and direct transport discovery for the Arturia
+MiniFreak and MicroFreak. The installed command is `freakout`; the historical
+`freak-patch` and `minifreak-patch` command names remain as compatible aliases.
 
 The project keeps device support honest and explicit:
 
@@ -24,6 +25,8 @@ The project keeps device support honest and explicit:
   refused because the upload protocol cannot recreate their empty representation.
 
 This is an independent open-source project and is not affiliated with Arturia.
+See [`NOTICE.md`](NOTICE.md) for the clean-room provenance and redistribution
+boundary.
 
 ## Install for development
 
@@ -49,9 +52,14 @@ freak-patch json-schema > patch.schema.json
 Example discovery output:
 
 ```text
-1: microfreak firmware=5.0.0.36 connector=microfreak
-8: minifreak firmware=4.0.1.53 connector=default
+coremidi:Arturia MicroFreak: microfreak backend=direct connector=arturia-microfreak-sysex firmware=not probed
+usb:1c75:0602:1: minifreak backend=direct connector=arturia-minifreak-collage-usb firmware=not probed
 ```
+
+Direct discovery is bounded and read-only. It reports the actual patch bus:
+paired MIDI SysEx for MicroFreak and vendor-specific Collage USB for MiniFreak.
+Use `freak-patch devices --backend elektroid` for the optional compatibility
+inventory and its firmware identification.
 
 ## Shared patch JSON
 
@@ -549,6 +557,8 @@ PYTHONPATH=src python3 -m unittest discover -s tests -v
 See [Open-source landscape](docs/open-source-landscape.md),
 [Transport roadmap](docs/transport-roadmap.md), and the evidence-ranked
 [MicroFreak firmware notes](docs/microfreak-firmware-notes.md). The separate
+[firmware-to-SysEx analysis playbook](docs/firmware-analysis-playbook.md)
+records the reusable method and MiniFreak handoff breadcrumbs. The separate
 [MIDI Control Center analysis](docs/microfreak-mcc-static-analysis.md) records
 host-side framing, wavetable, and subcommand-dictionary findings. A parallel
 [MiniFreak firmware research TODO](docs/minifreak-firmware-research-todo.md)

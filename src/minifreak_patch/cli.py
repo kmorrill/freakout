@@ -116,7 +116,12 @@ from minifreak_patch.sentinel import (
     collect_named_preset_corpus,
     generate_sentinel_experiment,
 )
-from minifreak_patch.transport import DeviceEndpoint, ElektroidTransport
+from minifreak_patch.transport import (
+    DeviceEndpoint,
+    DirectTransportDiscovery,
+    ElektroidTransport,
+    TransportError,
+)
 from minifreak_patch.wavetable import (
     MicroFreakWavetable,
     validate_minifreak_raw,
@@ -137,7 +142,7 @@ def _find_default_base() -> Optional[Path]:
 
 @click.group()
 def main():
-    """freak-patch — JSON patch tools for Arturia MiniFreak and MicroFreak."""
+    """Freakout — JSON patch tools for Arturia MiniFreak and MicroFreak."""
 
 
 # ── build ─────────────────────────────────────────────────────────────────
@@ -616,9 +621,23 @@ def json_schema_command():
 
 @main.command("devices")
 @click.option("--json", "json_output", is_flag=True)
-def devices_command(json_output: bool):
-    """Discover connected MiniFreak and MicroFreak MIDI transports."""
-    endpoints = ElektroidTransport().discover()
+@click.option(
+    "--backend",
+    type=click.Choice(("direct", "elektroid")),
+    default="direct",
+    show_default=True,
+    help="Use independent bounded discovery or Elektroid compatibility discovery.",
+)
+def devices_command(json_output: bool, backend: str):
+    """Discover Freak patch transports without changing either device."""
+    try:
+        endpoints = (
+            DirectTransportDiscovery().discover()
+            if backend == "direct"
+            else ElektroidTransport().discover()
+        )
+    except TransportError as exc:
+        raise click.ClickException(str(exc)) from exc
     if json_output:
         click.echo(json.dumps([item.to_dict() for item in endpoints], indent=2))
         return
@@ -627,7 +646,8 @@ def devices_command(json_output: bool):
     for item in endpoints:
         click.echo(
             f"{item.transport_id}: {item.device.value} "
-            f"firmware={item.firmware or '?'} connector={item.connector or '?'}"
+            f"backend={item.backend} connector={item.connector or '?'} "
+            f"firmware={item.firmware or 'not probed'}"
         )
 
 

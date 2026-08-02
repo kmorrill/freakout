@@ -51,6 +51,7 @@ LIVE_PARAMETER_GROUPS = 24
 LIVE_PARAMETER_WORDS_PER_GROUP = 16
 LIVE_PARAMETER_WORDS = LIVE_PARAMETER_GROUPS * LIVE_PARAMETER_WORDS_PER_GROUP
 MICROFREAK_OSCILLATOR_ENGINE_SCALE_MAX = 22
+MICROFREAK_STATUS_RECORD_SELECTORS = (0, 1, 2, 3, 4, 5, 7)
 MICROFREAK_OSCILLATOR_ENGINE_NAMES = {
     1: "BasicWaves",
     2: "SuperWave",
@@ -332,6 +333,38 @@ class DirectSampleStorageStats:
 
 
 @dataclass(frozen=True)
+class DirectStatusRecordReply:
+    """One raw operation-48 reply to a firmware-backed kind-0x13 request."""
+
+    selector: int
+    request_sequence: int
+    raw_sysex_hex: str
+    raw_length: int
+    prefix_hex: str
+    reply_sequence: int | None
+    declared_length: int | None
+    operation: int | None
+    payload_hex: str
+    declared_length_matches: bool
+    unpacked_record_hex: str | None
+    record_kind: int | None
+    record_selector: int | None
+    value_u16: int | None
+    value_u32: int | None
+
+
+@dataclass(frozen=True)
+class DirectStatusRecordCaptureReport:
+    """Read-only status replies plus before/after patch/global invariants."""
+
+    replies: tuple[DirectStatusRecordReply, ...]
+    live_table_exact: bool
+    changed_live_addresses: tuple[int, ...]
+    global_settings_exact: bool
+    changed_global_settings: tuple[tuple[str, int, int], ...]
+
+
+@dataclass(frozen=True)
 class DirectLiveParameterWord:
     """One read-only word from the live parameter-table transport."""
 
@@ -581,6 +614,31 @@ def pack_six_byte_state_record(record: bytes | Iterable[int]) -> bytes:
         if value & 0x80:
             flags |= bit
     return bytes((flags, *(value & 0x7F for value in raw)))
+
+
+def unpack_six_byte_state_record(data: bytes | Iterable[int]) -> bytes:
+    """Unpack the flag byte plus six MIDI-clean bytes into one raw record."""
+
+    packed = bytes(data)
+    if len(packed) != 7 or any(value > 0x7F for value in packed):
+        raise ValueError("packed MicroFreak state record must be seven 7-bit bytes")
+    flags = packed[0]
+    return bytes(
+        value | (0x80 if flags & bit else 0)
+        for bit, value in zip(
+            (0x40, 0x20, 0x10, 0x08, 0x04, 0x02), packed[1:]
+        )
+    )
+
+
+def encode_status_state_record_request(selector: int) -> bytes:
+    """Encode the statically read-only kind-0x13 status selector request."""
+
+    if selector not in MICROFREAK_STATUS_RECORD_SELECTORS:
+        choices = ", ".join(str(item) for item in MICROFREAK_STATUS_RECORD_SELECTORS)
+        raise ValueError(f"status selector must be one of: {choices}")
+    record = bytes((0xF5, 0x13, selector, 0, 0, 0))
+    return bytes((0x06, 0x7D)) + pack_six_byte_state_record(record)
 
 
 def encode_live_parameter_state_record_request(index: int, value: int) -> bytes:
@@ -1474,6 +1532,143 @@ class MicroFreakMidiTransport:
             estimated_free_bytes=free_ms * 64,
             capacity_bytes=SAMPLE_MEMORY_CAPACITY_BYTES,
             raw_payload_hex=payload.hex(),
+        )
+
+    @staticmethod
+    def _inspect_status_record_reply(
+        selector: int, request_sequence: int, raw_reply: bytes
+    ) -> DirectStatusRecordReply:
+        """Describe a raw reply without requiring either known wire framing."""
+
+        raw = bytes(raw_reply)
+        if raw[:1] == b"\xF0":
+            raw = raw[1:]
+        if raw[-1:] == b"\xF7":
+            raw = raw[:-1]
+        prefix = raw[:5]
+        reply_sequence = raw[5] if len(raw) > 5 else None
+        declared_length = raw[6] if len(raw) > 6 else None
+        operation = raw[7] if len(raw) > 7 else None
+        payload = raw[8:] if len(raw) > 8 else b""
+        length_matches = declared_length is not None and declared_length == len(payload)
+        unpacked_record: bytes | None = None
+        if (
+            prefix == bytes.fromhex("00 20 6b 07 7f")
+            and operation == 0x48
+            and length_matches
+            and len(payload) == 9
+            and payload[:2] == bytes((0x06, 0x7D))
+        ):
+            try:
+                unpacked_record = unpack_six_byte_state_record(payload[2:])
+            except ValueError:
+                pass
+        record_kind = None
+        record_selector = None
+        value_u16 = None
+        value_u32 = None
+        if unpacked_record is not None and unpacked_record[0] == 0xFF:
+            record_kind = unpacked_record[1]
+            if record_kind == 0x19 and unpacked_record[3] == 0:
+                record_selector = unpacked_record[2]
+                value_u16 = int.from_bytes(unpacked_record[4:6], "big")
+            elif record_kind in (0x1B, 0x1C, 0x1D):
+                value_u32 = int.from_bytes(unpacked_record[2:6], "big")
+        return DirectStatusRecordReply(
+            selector=selector,
+            request_sequence=request_sequence,
+            raw_sysex_hex=raw.hex(),
+            raw_length=len(raw),
+            prefix_hex=prefix.hex(),
+            reply_sequence=reply_sequence,
+            declared_length=declared_length,
+            operation=operation,
+            payload_hex=payload.hex(),
+            declared_length_matches=length_matches,
+            unpacked_record_hex=(
+                unpacked_record.hex() if unpacked_record is not None else None
+            ),
+            record_kind=record_kind,
+            record_selector=record_selector,
+            value_u16=value_u16,
+            value_u32=value_u32,
+        )
+
+    def capture_status_state_record_replies(
+        self,
+        selectors: Iterable[int] = MICROFREAK_STATUS_RECORD_SELECTORS,
+    ) -> DirectStatusRecordCaptureReport:
+        """Capture kind-0x13 replies and prove patch/global state stayed exact.
+
+        Firmware analysis classifies these seven selectors as getters. The raw
+        wire reply is retained before applying the likely seven-byte packed
+        record interpretation that explains the earlier six-byte decoder
+        rejection.
+        """
+
+        selected = tuple(dict.fromkeys(selectors))
+        if not selected:
+            raise ValueError("at least one MicroFreak status selector is required")
+        invalid = [
+            selector
+            for selector in selected
+            if selector not in MICROFREAK_STATUS_RECORD_SELECTORS
+        ]
+        if invalid:
+            raise ValueError(f"unsupported MicroFreak status selectors: {invalid}")
+
+        globals_before = self.read_global_settings()
+        port_name = self.resolve_port()
+        self.sequence = 0
+        baseline: list[DirectLiveParameterWord] = []
+        after: list[DirectLiveParameterWord] = []
+        replies: list[DirectStatusRecordReply] = []
+        with self.midi.open_input(port_name) as input_port, self.midi.open_output(
+            port_name
+        ) as output_port:
+            while input_port.poll() is not None:
+                pass
+            output_port.send(self._next_request(0x1C))
+            self.sleep(0.05)
+            try:
+                baseline = self._read_live_parameter_table_session(
+                    input_port, output_port
+                )
+                for selector in selected:
+                    request_sequence = self.sequence
+                    request = encode_status_state_record_request(selector)
+                    output_port.send(self._next_request(0x49, request))
+                    raw_reply = self._receive_raw_sysex(input_port)
+                    replies.append(
+                        self._inspect_status_record_reply(
+                            selector, request_sequence, raw_reply
+                        )
+                    )
+                after = self._read_live_parameter_table_session(
+                    input_port, output_port
+                )
+            finally:
+                output_port.send(self._next_request(0x1D))
+
+        globals_after = self.read_global_settings()
+        before_by_index = {word.index: word.raw_u16 for word in baseline}
+        after_by_index = {word.index: word.raw_u16 for word in after}
+        changed_live = tuple(
+            index
+            for index in before_by_index
+            if before_by_index[index] != after_by_index.get(index)
+        )
+        changed_globals = tuple(
+            (name, globals_before[name], globals_after[name])
+            for name in globals_before
+            if globals_before[name] != globals_after.get(name)
+        )
+        return DirectStatusRecordCaptureReport(
+            replies=tuple(replies),
+            live_table_exact=not changed_live,
+            changed_live_addresses=changed_live,
+            global_settings_exact=not changed_globals,
+            changed_global_settings=changed_globals,
         )
 
     def _read_live_parameter_word_session(

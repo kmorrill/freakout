@@ -215,22 +215,22 @@ The main code and documents to inspect are:
 
 The remaining firmware-backed SysEx queue is:
 
-1. Preserve the raw operation-`48` response for read-only operation-`49/6`
-   kind `0x13` selectors before changing the decoder.
-2. Trace callers and ownership for kinds `0x1E` and `0x18` before sending them.
-3. Establish readback and rollback for operation `4C` runtime controls.
-4. Resolve computed indirect dispatches that may reach active Sequence A/B
+1. Trace callers and ownership for kinds `0x1E` and `0x18` before sending them.
+2. Establish readback and rollback for operation `4C` runtime controls.
+3. Resolve computed indirect dispatches that may reach active Sequence A/B
    RAM.
-5. Finish lower-priority operation-`49` subcommands `0..3`, operation-`47`
+4. Finish lower-priority operation-`49` subcommands `0..3`, operation-`47`
    subcommands `0B/0C`, and operation `5C`.
-6. Keep operation `53` static-only until its mutation scope and recovery path
+5. Keep operation `53` static-only until its mutation scope and recovery path
    are independently known.
 
-The first kind-`0x13` hardware attempt received an operation-`48` reply whose
-shape contradicted the assumed decoder. The request was stopped, operation
-`1D` cleanup was sent, Clock Source was restored to Internal, slot 320 was
-recalled, and all 384 live words matched the baseline. Treat that as a framing
-lead, not a decoded result.
+The kind-`0x13` follow-up is a worked example of preserving contradiction. Raw
+frames showed that the operation-`48` payload was not a bare seven-byte packed
+record but `06 7D` plus that record. After correcting only that framing layer,
+all seven selectors decoded byte-for-byte to the six-byte records constructed
+by firmware. The session preserved exact before/after snapshots of all 384
+live words and all 43 globals. External names for the returned runtime words
+remain withheld because framing proof is not semantic proof.
 
 ## Applying the method to MiniFreak
 

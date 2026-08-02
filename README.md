@@ -406,12 +406,19 @@ successful captures. This is not labelled a lossless Sequence A/B object dump:
 inactive/raw bytes and selecting both patterns remain open.
 
 The remaining firmware-backed SysEx work is tracked explicitly in
-`docs/microfreak-firmware-notes.md` and `docs/transport-roadmap.md`. The leading
-avenues are raw capture of the read-only operation-`49/6` kind-`0x13` replies,
-caller analysis for kinds `0x1E` and `0x18`, and resolution of computed indirect
-dispatches that might reach the active Sequence A/B object. Operation `4C`
-remains disabled pending readback/rollback proof, and operation `53` remains an
-unsafe static-only surface that must not be hardware-probed yet.
+`docs/microfreak-firmware-notes.md` and `docs/transport-roadmap.md`. All seven
+read-only operation-`49/6` kind-`0x13` status selectors now have raw hardware
+captures and a decoded JSON command:
+
+```sh
+freak-patch microfreak-status-records-direct status-records.json
+```
+
+The leading remaining avenues are caller analysis for kinds `0x1E` and `0x18`
+and resolution of computed indirect dispatches that might reach the active
+Sequence A/B object. Operation `4C` remains disabled pending readback/rollback
+proof, and operation `53` remains an unsafe static-only surface that must not be
+hardware-probed yet.
 
 Adding `--live-snapshot-every N` samples operation 41 at exact external-clock
 boundaries. By default it reads all 384 words; repeated `--live-field` options

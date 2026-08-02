@@ -5,18 +5,21 @@ from minifreak_patch.microfreak_midi import (
     MICROFREAK_LIVE_WORD_SEMANTICS,
     MICROFREAK_GLOBAL_CODES,
     MICROFREAK_OSCILLATOR_ENGINE_NAMES,
+    MICROFREAK_STATUS_RECORD_SELECTORS,
     MicroFreakMidiTransport,
     decode_control_word_payload,
     encode_control_index_payload,
     encode_control_word_request_payload,
     encode_control_word_payload,
     encode_live_parameter_state_record_request,
+    encode_status_state_record_request,
     decode_sysex,
     encode_sysex,
     infer_oscillator_engine_index,
     microfreak_sample_checksum,
     pack_8bit_midi,
     pack_six_byte_state_record,
+    unpack_six_byte_state_record,
     unpack_8bit_midi,
 )
 from minifreak_patch.microfreak_live_map import (
@@ -169,6 +172,33 @@ class FakeOutput(FakeInput):
                     (0x40, 0x20, 0x10, 0x08, 0x04, 0x02), packed[1:]
                 )
             )
+            if record[1] == 0x13:
+                selector = record[2]
+                if selector == 2:
+                    reply_record = bytes.fromhex("ff1a50000824")
+                elif selector in (3, 4, 5):
+                    reply_record = bytes(
+                        (
+                            0xFF,
+                            0x18 + selector,
+                            selector,
+                            0x20 + selector,
+                            0,
+                            selector ^ 0x55,
+                        )
+                    )
+                else:
+                    reply_record = bytes(
+                        (0xFF, 0x19, selector, 0, 0, selector ^ 0x55)
+                    )
+                payload = bytes((0x06, 0x7D)) + pack_six_byte_state_record(
+                    reply_record
+                )
+                response = bytes.fromhex("f000206b077f45") + bytes(
+                    (len(payload), 0x48)
+                ) + payload + b"\xf7"
+                self.queue.append(FakeMessage("sysex", response[1:-1]))
+                return
             index = int.from_bytes(record[2:4], "big")
             value = int.from_bytes(record[4:6], "big") >> 1
             self.backend.live_words[index] = value
@@ -860,6 +890,45 @@ class MicroFreakMidiTests(unittest.TestCase):
             pack_six_byte_state_record(b"short")
         with self.assertRaisesRegex(ValueError, "0..32767"):
             encode_live_parameter_state_record_request(0x0101, 0x8000)
+
+    def test_status_state_record_request_and_reply_are_seven_byte_packed(self):
+        request = encode_status_state_record_request(7)
+        self.assertEqual(request[:2], bytes((0x06, 0x7D)))
+        self.assertEqual(
+            unpack_six_byte_state_record(request[2:]),
+            bytes.fromhex("f5 13 07 00 00 00"),
+        )
+        with self.assertRaises(ValueError):
+            encode_status_state_record_request(6)
+
+    def test_status_record_capture_preserves_raw_replies_and_state(self):
+        backend = FakeMido(bytes(4672))
+        transport = MicroFreakMidiTransport(
+            midi_backend=backend, timeout=0.01, sleep_fn=lambda _: None
+        )
+        report = transport.capture_status_state_record_replies()
+        self.assertEqual(
+            tuple(reply.selector for reply in report.replies),
+            MICROFREAK_STATUS_RECORD_SELECTORS,
+        )
+        self.assertTrue(report.live_table_exact)
+        self.assertTrue(report.global_settings_exact)
+        self.assertEqual(report.changed_live_addresses, ())
+        self.assertEqual(report.changed_global_settings, ())
+        first = report.replies[0]
+        self.assertEqual(first.operation, 0x48)
+        self.assertEqual(first.declared_length, 9)
+        self.assertTrue(first.declared_length_matches)
+        self.assertEqual(first.unpacked_record_hex, "ff1900000055")
+        self.assertEqual(first.record_kind, 0x19)
+        self.assertEqual(first.record_selector, 0)
+        self.assertEqual(first.value_u16, 0x55)
+        self.assertIsNone(first.value_u32)
+        selector_three = report.replies[3]
+        self.assertEqual(selector_three.record_kind, 0x1B)
+        self.assertIsNone(selector_three.record_selector)
+        self.assertIsNone(selector_three.value_u16)
+        self.assertEqual(selector_three.value_u32, 0x03230056)
 
     def test_live_word_semantics_preserve_known_aliases_and_dependents(self):
         cutoff = [

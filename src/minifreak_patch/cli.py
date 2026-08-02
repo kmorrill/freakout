@@ -14,6 +14,7 @@ import base64
 import hashlib
 import json
 import sys
+from dataclasses import asdict
 from pathlib import Path
 from typing import Optional
 
@@ -42,6 +43,7 @@ from minifreak_patch.microfreak_midi import (
     MICROFREAK_GLOBAL_CODES,
     MICROFREAK_LIVE_WORD_SEMANTICS,
     MICROFREAK_OSCILLATOR_ENGINE_NAMES,
+    MICROFREAK_STATUS_RECORD_SELECTORS,
     MicroFreakMidiTransport,
     infer_oscillator_engine_index,
 )
@@ -1308,6 +1310,62 @@ def set_microfreak_sequence_destination_command(
     click.echo(
         f"Set MicroFreak Sequence {pattern.upper()} lane {lane} "
         f"destination={rendered} -> {output_path}"
+    )
+
+
+@main.command("microfreak-status-records-direct")
+@click.argument("output_path", type=click.Path())
+@click.option(
+    "--selector",
+    "selectors",
+    type=click.Choice(tuple(str(item) for item in MICROFREAK_STATUS_RECORD_SELECTORS)),
+    multiple=True,
+    help="Firmware-backed read-only selector; repeat to restrict the capture.",
+)
+@click.option("--port", default=None, help="Exact paired MicroFreak MIDI port.")
+def microfreak_status_records_direct_command(
+    output_path: str, selectors: tuple[str, ...], port: str | None
+):
+    """Capture raw kind-0x13 replies and verify live/global state is exact."""
+
+    selected = (
+        tuple(int(selector) for selector in selectors)
+        if selectors
+        else MICROFREAK_STATUS_RECORD_SELECTORS
+    )
+    try:
+        report = MicroFreakMidiTransport(
+            port_name=port
+        ).capture_status_state_record_replies(selected)
+    except Exception as exc:
+        raise click.ClickException(str(exc)) from exc
+    document = {
+        "schema_version": "microfreak-status-record-capture/1",
+        "device": "microfreak",
+        "transport": "arturia-microfreak-sysex-49-6-kind-13",
+        "evidence": "firmware_static_read_only_plus_raw_hardware_capture",
+        "selectors": list(selected),
+        "replies": [asdict(reply) for reply in report.replies],
+        "state_verification": {
+            "live_table_exact": report.live_table_exact,
+            "changed_live_addresses": [
+                f"{address:04x}" for address in report.changed_live_addresses
+            ],
+            "global_settings_exact": report.global_settings_exact,
+            "changed_global_settings": [
+                {"name": name, "before": before, "after": after}
+                for name, before, after in report.changed_global_settings
+            ],
+        },
+    }
+    Path(output_path).write_text(json.dumps(document, indent=2) + "\n")
+    if not report.live_table_exact or not report.global_settings_exact:
+        raise click.ClickException(
+            f"status capture changed device state; raw report retained: {output_path}"
+        )
+    click.echo(
+        f"Captured {len(report.replies)} MicroFreak status replies with exact "
+        f"live/global state -> {output_path}"
     )
 
 

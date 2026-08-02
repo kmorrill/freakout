@@ -255,19 +255,19 @@ An accepted MIDI packet is not proof of persistent device state.
 
 ### Remaining firmware SysEx queue
 
-1. Capture the raw operation-`48` reply to the statically read-only
-   operation-`49/6` kind-`0x13` selector family before changing the decoder.
-   Selectors `0`, `1`, `2`, `3`, `4`, `5`, and `7` are visible in firmware;
-   the first hardware reply contradicted the assumed alternate framing but was
-   followed by cleanup and exact baseline recovery.
-2. Trace callers for operation-`49/6` kinds `0x1E` and `0x18` before deciding
+1. Trace callers for operation-`49/6` kinds `0x1E` and `0x18` before deciding
    whether their apparent runtime-mode/action behavior is safe to exercise.
-3. Keep the named operation-`4C` clock/start/gate/MIDI boolean controls
+2. Keep the named operation-`4C` clock/start/gate/MIDI boolean controls
    disabled until they have readback and rollback contracts.
-4. Resolve the remaining computed indirect dispatch targets that could reach
+3. Resolve the remaining computed indirect dispatch targets that could reach
    active Sequence A/B RAM; this is the strongest remaining direct-dump avenue.
-5. Complete lower-priority operation-`49` subcommands `0..3`, operation-`47`
+4. Complete lower-priority operation-`49` subcommands `0..3`, operation-`47`
    subcommands `0B/0C`, and operation `5C` only after the routes above.
 
 Operation `53` remains an unsafe, static-only mutation surface. Do not probe it
 until its target, scope, and recovery path are independently established.
+
+Completed: operation-`49/6` kind-`0x13` now preserves and decodes all seven
+hardware replies. The actual operation-`48` payload is `06 7D` plus a packed
+six-byte record. One session left all 384 live words and all 43 globals exact;
+the raw/structural JSON command is documented in `microfreak-sysex.md`.

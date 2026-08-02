@@ -237,7 +237,7 @@ of the bulk-object state machine:
 | `42` | global-setting write | hardware verified |
 | `43` | global-setting read | hardware verified |
 | `47` | sample-storage statistics request | firmware/public-flow correlated |
-| `49` | maintenance subcommand | firmware confirmed; deliberately disabled |
+| `49` | packed state-record bridge / maintenance subcommands | guarded live writes and read-only status records hardware verified; other branches disabled |
 | `4C` | `clock`/`start`/`gate`/`midi` runtime Boolean control | firmware confirmed; write disabled |
 | `53` | hidden 43-byte debug-console bridge | firmware confirmed; deliberately disabled |
 
@@ -558,6 +558,45 @@ unchanged. They are consequently documented as readable hidden global state,
 not guessed to be preset IDs or bank-select latches. The CLI command
 `microfreak-global-codes-direct` provides this bounded raw read without adding
 unsupported names.
+
+### Read-only packed status records
+
+Operation `49`, subcommand `6`, is also the externally verified bridge to the
+firmware's read-only kind-`0x13` selector family. A request payload is:
+
+```text
+06 7D <flags> 75 13 <selector> 00 00 00
+```
+
+`<flags>` restores the high bit of each of the following six bytes; `75` is
+therefore internal byte `F5`. The device replies through the alternate-prefix
+operation-`48` envelope with a nine-byte payload:
+
+```text
+06 7D <flags> <six MIDI-clean record bytes>
+```
+
+All seven statically identified selectors were captured on firmware 5.0.0.36:
+
+| Selector | Unpacked six-byte record | Conservative interpretation |
+|---:|---|---|
+| `0` | `FF 19 00 00 00 00` | kind `19`, selector `0`, unsigned value `0` |
+| `1` | `FF 19 01 00 01 80` | kind `19`, selector `1`, unsigned value `384`; this equals the complete operation-`41` table size |
+| `2` | `FF 1A 50 00 08 24` | fixed kind-`1A` signature |
+| `3` | `FF 1B 00 27 00 1D` | kind `1B`, raw big-endian word `0x0027001D` |
+| `4` | `FF 1C 34 32 51 16` | kind `1C`, raw big-endian word `0x34325116` |
+| `5` | `FF 1D 36 36 32 38` | kind `1D`, raw big-endian word `0x36363238` |
+| `7` | `FF 19 07 00 0C DE` | kind `19`, selector `7`, unsigned value `3294` |
+
+The wire records match the firmware branch byte-for-byte: selector `1` calls
+the `FUN_08022f88` getter, selector `7` calls `FUN_08022ee0(..., 2)`, and
+selectors `3..5` serialize three separate 32-bit globals as kinds `1B..1D`.
+Their external meanings are not yet proven, so JSON exposes both raw bytes and
+only the structural integer interpretations above. The capture command reads
+all 384 live words and all 43 named globals before and after the seven-query
+session; hardware showed zero differences in both sets. This establishes a
+read-only boundary for those observed states, not for every hidden runtime
+object.
 
 ### Guarded global-setting write
 

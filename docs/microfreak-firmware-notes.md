@@ -642,37 +642,50 @@ words exactly.
 
 The remaining queue is deliberately separated by evidence and risk:
 
-1. **Operation `49/6`, record kind `0x13` (decimal 19): read-only status
-   selectors.** Static firmware analysis shows selectors `0`, `1`, `2`, `3`,
-   `4`, `5`, and `7`, each building a six-byte operation-`48` reply. The first
-   hardware request did receive operation `48`, but its raw reply shape did not
-   match the alternate six-byte decoder assumed by the probe. The probe stopped,
-   sent operation `1D` cleanup, restored Clock Source to Internal, recalled slot
-   320, and verified the complete 384-word live baseline exactly. Next step:
-   capture and preserve the raw reply before assigning any field meaning or
-   exposing a command.
-2. **Operation `49/6`, record kinds `0x1E` (30) and `0x18` (24): runtime
+1. **Operation `49/6`, record kinds `0x1E` (30) and `0x18` (24): runtime
    mode/action candidates.** The firmware suggests a three-state runtime value
    and a separate action-like path. They are plausible control surfaces, not
    hardware-proven protocol. Analyze their callers and state ownership before
    sending either record.
-3. **Operation `4C`: clock/start/gate/MIDI boolean controls.** Firmware strings
+2. **Operation `4C`: clock/start/gate/MIDI boolean controls.** Firmware strings
    and branches provide useful names, but the operation has no demonstrated
    reply or rollback contract. Keep it disabled until each control has a
    bounded, reversible experiment and independent readback.
-4. **Computed indirect dispatch flows:** these are the remaining plausible
+3. **Computed indirect dispatch flows:** these are the remaining plausible
    firmware route to the active Sequence A/B object at RAM `0x20000EEC` after
    all statically resolved paths were ruled out. Resolve indirect targets for
    bulk operations `16`, `17`, `59`, and `5C`, and control operations `1C`,
    `1D`, `40`, `42`, `47`, `49`, and `53`, before concluding there is no direct
    current-sequence dump.
-5. **Lower-priority completeness work:** operation-`49` subcommands `0..3`,
+4. **Lower-priority completeness work:** operation-`49` subcommands `0..3`,
    operation-`47` subcommands `0B/0C`, and operation `5C`. These may close
    framing or lifecycle gaps but currently have less direct evidence of
    unlocking patch editing.
 
 Operation `53` remains static-analysis-only and unsafe to probe. Its mutation
 and rollback boundaries must be established before any hardware experiment.
+
+### Completed kind-`0x13` status-selector capture
+
+The full selector set `0, 1, 2, 3, 4, 5, 7` is now hardware-correlated. The
+earlier decoder expected a bare seven-byte packed record, but the actual
+operation-`48` payload is nine bytes: `06 7D` followed by the flag byte and six
+MIDI-clean record bytes. The unpacked records are respectively
+`FF1900000000`, `FF1901000180`, `FF1A50000824`, `FF1B0027001D`,
+`FF1C34325116`, `FF1D36363238`, and `FF1907000CDE`.
+
+This exactly matches `FUN_08046C60`: selectors `0`, `1`, and `7` emit kind
+`19` with a selector plus big-endian 16-bit value; selector `2` emits the fixed
+kind-`1A` record; selectors `3..5` emit kinds `1B..1D` with three big-endian
+32-bit globals. Selector `1` returned `384`, the exact number of words exported
+by operation `41`. That correspondence is strong but does not by itself prove
+a public semantic name for the getter. The other runtime words likewise stay
+raw until caller or state correlation establishes their meaning.
+
+The seven requests ran in one `1C`/`1D` session. Complete before/after reads of
+all 384 live words and all 43 named globals were exact. The public
+`microfreak-status-records-direct` command retains each raw frame, decoded
+record, structural integer, and both state comparisons in JSON.
 
 Address-coordinate rule: the header-stripped raw file is loaded at the real
 `0x08020000` linked base, so raw offset is `address - 0x08020000`; the packaged

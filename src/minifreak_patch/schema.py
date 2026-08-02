@@ -546,6 +546,10 @@ DEVICE_CAPABILITIES: dict[DeviceModel, dict[str, Capability]] = {
             level=SupportLevel.GUARDED,
             note="Operation 42 accepts a named code/value pair but provides no acknowledgement. Root Note 0x46 and hidden Automation Out 0x23 were hardware-proven target/inverse through operation-43 readback with no active-table change. All 43 firmware-bounded domains support backup-before-write and exact target readback; labels preserve raw values when semantic units remain unknown.",
         ),
+        "runtime.status.read": Capability(
+            level=SupportLevel.PARTIAL,
+            note="Operation 49/6 kind 0x13 exports all seven firmware-backed status selectors. Raw operation-48 frames and structural 16/32-bit values are hardware verified with exact before/after checks of all 384 live words and 43 globals; external meanings of several runtime words remain unresolved.",
+        ),
         "wavetable.file.prepare": Capability(
             level=SupportLevel.VERIFIED,
             note="32 cycles x 256 samples, mono PCM16 at 32 kHz; plain .mfw and one-entry .mfwz are supported.",
